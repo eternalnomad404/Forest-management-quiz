@@ -7,6 +7,22 @@ import ProgressIndicator from './ProgressIndicator';
 
 type SessionMode = 'sequence' | 'jumbled';
 
+const ASSIGNMENT_ID_RANGES_IN_ORDER = [
+  [1, 10],     // Assignment 0
+  [11, 20],    // Assignment 1
+  [21, 30],    // Assignment 2
+  [101, 110],  // Assignment 3
+  [121, 130],  // Assignment 4
+  [31, 40],    // Assignment 5
+  [41, 50],    // Assignment 6
+  [51, 60],    // Assignment 7
+  [61, 70],    // Assignment 8
+  [71, 80],    // Assignment 9
+  [81, 90],    // Assignment 10
+  [91, 100],   // Assignment 11
+  [111, 120],  // Assignment 12
+] as const;
+
 function shuffleArray<T>(items: T[]): T[] {
   const shuffled = [...items];
   for (let i = shuffled.length - 1; i > 0; i -= 1) {
@@ -34,7 +50,23 @@ function shuffleWithVisibleChange<T>(items: T[]): T[] {
 
 function buildSessionQuestions(mode: SessionMode) {
   if (mode === 'sequence') {
-    return QUESTIONS;
+    const byId = new Map(QUESTIONS.map(question => [Number(question.id), question]));
+    const orderedQuestions = ASSIGNMENT_ID_RANGES_IN_ORDER.flatMap(([start, end]) => {
+      const group = [];
+      for (let id = start; id <= end; id += 1) {
+        const question = byId.get(id);
+        if (question) group.push(question);
+      }
+      return group;
+    });
+
+    // Include any unexpected question IDs at the end, sorted numerically.
+    const orderedIds = new Set(orderedQuestions.map(question => question.id));
+    const leftovers = QUESTIONS
+      .filter(question => !orderedIds.has(question.id))
+      .sort((a, b) => Number(a.id) - Number(b.id));
+
+    return [...orderedQuestions, ...leftovers];
   }
 
   const withShuffledOptions = QUESTIONS.map(question => ({
