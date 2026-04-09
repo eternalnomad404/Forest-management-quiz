@@ -425,17 +425,6 @@ export default function QuizContainer() {
       <div className="mt-6 text-center text-xs md:text-sm font-semibold uppercase tracking-wide text-indigo-100">
         Session Type: {sessionMode === 'jumbled' ? 'Jumbled' : 'In Sequence'}
       </div>
-      <div className="mt-2 text-center text-xs md:text-sm text-indigo-100/90">
-        Made with ❤️ by{' '}
-        <a
-          href="https://www.linkedin.com/in/aman-jain-3a6609283/"
-          target="_blank"
-          rel="noreferrer"
-          className="font-semibold underline underline-offset-2 hover:text-white"
-        >
-          Aman Jain
-        </a>
-      </div>
     </div>
   );
 }
