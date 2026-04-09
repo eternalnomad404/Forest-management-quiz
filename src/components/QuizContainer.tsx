@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, RotateCcw, Trophy } from 'lucide-react';
 import { QUESTIONS } from '../data/questions';
@@ -6,6 +6,7 @@ import QuestionCard from './QuestionCard';
 import ProgressIndicator from './ProgressIndicator';
 
 type SessionMode = 'sequence' | 'jumbled';
+const QUIZ_SESSION_STORAGE_KEY = 'forest-quiz-session-v1';
 
 const ASSIGNMENT_ID_RANGES_IN_ORDER = [
   [1, 10],     // Assignment 0
@@ -77,13 +78,100 @@ function buildSessionQuestions(mode: SessionMode) {
   return shuffleWithVisibleChange(withShuffledOptions);
 }
 
+function isValidQuestionShape(value: unknown): value is {
+  id: string;
+  question: string;
+  options: string[];
+  answer: string;
+} {
+  if (!value || typeof value !== 'object') return false;
+  const item = value as { [key: string]: unknown };
+  return (
+    typeof item.id === 'string' &&
+    typeof item.question === 'string' &&
+    Array.isArray(item.options) &&
+    item.options.every(option => typeof option === 'string') &&
+    typeof item.answer === 'string'
+  );
+}
+
 export default function QuizContainer() {
+  const [isHydrated, setIsHydrated] = useState(false);
   const [sessionMode, setSessionMode] = useState<SessionMode | null>(null);
   const [sessionQuestions, setSessionQuestions] = useState<typeof QUESTIONS>([]);
   const [activeQuestions, setActiveQuestions] = useState<typeof QUESTIONS>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<(string | null)[]>([]);
   const [isFinished, setIsFinished] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = window.sessionStorage.getItem(QUIZ_SESSION_STORAGE_KEY);
+      if (!raw) {
+        setIsHydrated(true);
+        return;
+      }
+
+      const parsed = JSON.parse(raw) as {
+        sessionMode: SessionMode;
+        sessionQuestions: unknown[];
+        activeQuestions: unknown[];
+        currentIndex: number;
+        answers: (string | null)[];
+        isFinished: boolean;
+      };
+
+      const validMode = parsed.sessionMode === 'sequence' || parsed.sessionMode === 'jumbled';
+      const validSessionQuestions = Array.isArray(parsed.sessionQuestions) &&
+        parsed.sessionQuestions.every(isValidQuestionShape);
+      const validActiveQuestions = Array.isArray(parsed.activeQuestions) &&
+        parsed.activeQuestions.every(isValidQuestionShape);
+      const validCurrentIndex = Number.isInteger(parsed.currentIndex) && parsed.currentIndex >= 0;
+      const validAnswers = Array.isArray(parsed.answers) &&
+        parsed.answers.every(answer => answer === null || typeof answer === 'string');
+      const validIsFinished = typeof parsed.isFinished === 'boolean';
+
+      if (
+        validMode &&
+        validSessionQuestions &&
+        validActiveQuestions &&
+        validCurrentIndex &&
+        validAnswers &&
+        validIsFinished
+      ) {
+        setSessionMode(parsed.sessionMode);
+        setSessionQuestions(parsed.sessionQuestions);
+        setActiveQuestions(parsed.activeQuestions);
+        setCurrentIndex(parsed.currentIndex);
+        setAnswers(parsed.answers);
+        setIsFinished(parsed.isFinished);
+      }
+    } catch {
+      // Ignore corrupted session data and start fresh.
+    } finally {
+      setIsHydrated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    if (sessionMode === null) {
+      window.sessionStorage.removeItem(QUIZ_SESSION_STORAGE_KEY);
+      return;
+    }
+
+    const payload = {
+      sessionMode,
+      sessionQuestions,
+      activeQuestions,
+      currentIndex,
+      answers,
+      isFinished,
+    };
+
+    window.sessionStorage.setItem(QUIZ_SESSION_STORAGE_KEY, JSON.stringify(payload));
+  }, [isHydrated, sessionMode, sessionQuestions, activeQuestions, currentIndex, answers, isFinished]);
 
   const startSession = (mode: SessionMode) => {
     const preparedQuestions = buildSessionQuestions(mode);
@@ -94,6 +182,10 @@ export default function QuizContainer() {
     setAnswers(new Array(preparedQuestions.length).fill(null));
     setIsFinished(false);
   };
+
+  if (!isHydrated) {
+    return null;
+  }
 
   if (sessionMode === null) {
     return (
