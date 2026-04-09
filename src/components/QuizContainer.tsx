@@ -260,13 +260,8 @@ export default function QuizContainer() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 md:py-12">
-      {/* Header Section */}
-      <div className="mb-8">
-        <h1 className="text-white text-center text-2xl md:text-3xl font-extrabold mb-6 tracking-tight">
-          Forests and their management quiz
-        </h1>
-        
+    <div className="max-w-2xl mx-auto px-4 py-6 md:py-10">
+      <div className="mb-6">
         <div className="flex items-center justify-between bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/20">
           <button
             onClick={handleBack}
