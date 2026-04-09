@@ -770,5 +770,335 @@ export const QUESTIONS: Question[] = [
       "group shelterwood system"
     ],
     answer: "selection system"
+  },
+  {
+    id: '71',
+    question: "Careful selection of trees for harvesting based on a forest management prescription is known as",
+    options: [
+      "surveying",
+      "cruising",
+      "marking",
+      "logging"
+    ],
+    answer: "marking"
+  },
+  {
+    id: '72',
+    question: "Moving of logs from forest to landing area is known as",
+    options: [
+      "marking",
+      "bucking",
+      "skidding",
+      "delimbing"
+    ],
+    answer: "skidding"
+  },
+  {
+    id: '73',
+    question: "Net growth in initial volume is given by",
+    options: [
+      "V2-V1",
+      "V2-V1+H-I",
+      "V2-V1+H-I+M",
+      "V2-V1+H-I-M"
+    ],
+    answer: "V2-V1+H-I"
+  },
+  {
+    id: '74',
+    question: "Surveying timberlands to locate and estimate the volumes and grades of standing timber meeting requirements is known as",
+    options: [
+      "surveying",
+      "cruising",
+      "marking",
+      "logging"
+    ],
+    answer: "cruising"
+  },
+  {
+    id: '75',
+    question: "Which of these gives the greatest accuracy in constructing face cuts",
+    options: [
+      "conventional face",
+      "humboldt face",
+      "open face",
+      "all of these"
+    ],
+    answer: "conventional face"
+  },
+  {
+    id: '76',
+    question: "Trees to be retained are shown in ___ marking colour",
+    options: [
+      "yellow",
+      "blue",
+      "red",
+      "white"
+    ],
+    answer: "blue"
+  },
+  {
+    id: '77',
+    question: "Cutting of timber into logs is known as",
+    options: [
+      "marking",
+      "bucking",
+      "skidding",
+      "delimbing"
+    ],
+    answer: "bucking"
+  },
+  {
+    id: '78',
+    question: "Research plots are shown in ___ marking colour",
+    options: [
+      "yellow",
+      "blue",
+      "red",
+      "white"
+    ],
+    answer: "white"
+  },
+  {
+    id: '79',
+    question: "Trees on boundary are shown in ___ marking colour",
+    options: [
+      "yellow",
+      "blue",
+      "red",
+      "white"
+    ],
+    answer: "red"
+  },
+  {
+    id: '80',
+    question: "Which of these gives the greatest saving of lumber",
+    options: [
+      "conventional face",
+      "humboldt face",
+      "open face",
+      "all of these"
+    ],
+    answer: "humboldt face"
+  },
+  {
+    id: '81',
+    question: "Which of these is a good storage condition",
+    options: [
+      "high moisture, high temperature",
+      "high moisture, low temperature",
+      "low moisture, high temperature",
+      "low moisture, low temperature"
+    ],
+    answer: "low moisture, low temperature"
+  },
+  {
+    id: '82',
+    question: "Agave is used for",
+    options: [
+      "barbed wire fencing",
+      "live fencing",
+      "chain link fencing",
+      "stone wall fencing"
+    ],
+    answer: "live fencing"
+  },
+  {
+    id: '83',
+    question: "Which of these conserves moisture",
+    options: [
+      "sunken bed",
+      "raised bed",
+      "flat bed",
+      "all of these"
+    ],
+    answer: "sunken bed"
+  },
+  {
+    id: '84',
+    question: "Shell cracking of seeds is used for which species",
+    options: [
+      "amla",
+      "mango",
+      "ber",
+      "teak"
+    ],
+    answer: "ber"
+  },
+  {
+    id: '85',
+    question: "Which of these is not a laboratory method to determine best days for seed collection?",
+    options: [
+      "maximum dry weight",
+      "colour of fruits",
+      "moisture content of fruits",
+      "chemical analysis of fat and nitrogen content"
+    ],
+    answer: "colour of fruits"
+  },
+  {
+    id: '86',
+    question: "Which of these characterises a refractory site",
+    options: [
+      "soil depth < 10 cm",
+      "soil depth 10-30 cm",
+      "soil depth > 30 cm",
+      "none of these"
+    ],
+    answer: "soil depth < 10 cm"
+  },
+  {
+    id: '87',
+    question: "Which of these prevents water logging",
+    options: [
+      "sunken bed",
+      "raised bed",
+      "flat bed",
+      "all of these"
+    ],
+    answer: "raised bed"
+  },
+  {
+    id: '88',
+    question: "Wet and dry treatment of seeds is used for which species",
+    options: [
+      "amla",
+      "mango",
+      "ber",
+      "teak"
+    ],
+    answer: "teak"
+  },
+  {
+    id: '89',
+    question: "Choice of spacing is dependent upon",
+    options: [
+      "objective of plantation",
+      "site-species matching",
+      "growth rate",
+      "all of these"
+    ],
+    answer: "all of these"
+  },
+  {
+    id: '90',
+    question: "Number of seeds in sample that germinate upto the peak germination period expressed as % is a definition of",
+    options: [
+      "germination number",
+      "germination percentage",
+      "germination energy",
+      "germination power"
+    ],
+    answer: "germination energy"
+  },
+  {
+    id: '91',
+    question: "Zoo is an example of",
+    options: [
+      "in-situ conservation",
+      "ex-situ conservation",
+      "in-situ preservation",
+      "ex-situ preservation"
+    ],
+    answer: "ex-situ conservation"
+  },
+  {
+    id: '92',
+    question: "Captive breeding is an example of",
+    options: [
+      "in-situ conservation",
+      "ex-situ conservation",
+      "in-situ preservation",
+      "ex-situ preservation"
+    ],
+    answer: "ex-situ conservation"
+  },
+  {
+    id: '93',
+    question: "The elephant has a home range of several square kilometres, regulates the ecosystem by its habit of destructive feeding, and people can relate to this animal which is important for conservation. Given this background, the elephant can be called as",
+    options: [
+      "umbrella species",
+      "keystone species",
+      "flagship species",
+      "all of the above"
+    ],
+    answer: "all of the above"
+  },
+  {
+    id: '94',
+    question: "Sustainable harvest of resources falls under the category of:",
+    options: [
+      "conservation",
+      "preservation",
+      "environmentalism",
+      "none of the above"
+    ],
+    answer: "conservation"
+  },
+  {
+    id: '95',
+    question: "Which of these is not a forest classification as per the 1894 Forest Policy:",
+    options: [
+      "protection forest",
+      "production forest",
+      "minor forest",
+      "major forest"
+    ],
+    answer: "major forest"
+  },
+  {
+    id: '96',
+    question: "The tiger has a home range of several square kilometres, regulates the ecosystem through controlling herbivore populations and trophic cascades, and people come to tiger reserves to watch tigers. Thus, the tiger can be called as",
+    options: [
+      "umbrella species",
+      "keystone species",
+      "flagship species",
+      "all of the above"
+    ],
+    answer: "all of the above"
+  },
+  {
+    id: '97',
+    question: "Planting along canal banks is a part of",
+    options: [
+      "farm forestry",
+      "community forestry",
+      "extension forestry",
+      "agroforestry"
+    ],
+    answer: "extension forestry"
+  },
+  {
+    id: '98',
+    question: "In 1931, Van Panchayats were constituted in areas that are now in",
+    options: [
+      "Tamil Nadu",
+      "Madhya Pradesh",
+      "West Bengal",
+      "Uttarakhand"
+    ],
+    answer: "Uttarakhand"
+  },
+  {
+    id: '99',
+    question: "People come to Sessa orchid sanctuary in Arunachal Pradesh to witness orchids, which in this context would be classified as",
+    options: [
+      "umbrella species",
+      "keystone species",
+      "flagship species",
+      "extinct species"
+    ],
+    answer: "flagship species"
+  },
+  {
+    id: '100',
+    question: "The fig tree bears fruits in times when animals do not have much access to food. In this context, it would be a good example of",
+    options: [
+      "least concern species",
+      "keystone species",
+      "flagship species",
+      "extinct species"
+    ],
+    answer: "keystone species"
   }
 ];
