@@ -3,62 +3,112 @@ import { Question } from '../types';
 export const QUESTIONS: Question[] = [
   {
     id: '1',
-    question: "Which of the following is a primary benefit of sustainable forest management?",
-    options: ["Soil erosion increase", "Biodiversity conservation", "Desertification", "Uncontrolled logging"],
-    answer: "Biodiversity conservation"
+    question: "Plant community, predominantly comprised of trees and other woody vegetation, usually with a closed canopy is:",
+    options: [
+      "Silvicultural definition of forests",
+      "FAO definition of forests",
+      "Legal definition of forests",
+      "Ecological definition of forests"
+    ],
+    answer: "Ecological definition of forests"
   },
   {
     id: '2',
-    question: "What is the process of planting trees in an area where there were no trees before?",
-    options: ["Reforestation", "Deforestation", "Afforestation", "Selective logging"],
-    answer: "Afforestation"
+    question: "The value derived from the knowledge of use of resources by others in the current generation is called:",
+    options: [
+      "Altruistic value",
+      "Bequest value",
+      "Existence value",
+      "Option value"
+    ],
+    answer: "Altruistic value"
   },
   {
     id: '3',
-    question: "Which layer of the forest is located just below the emergent layer?",
-    options: ["Understory", "Forest floor", "Canopy", "Shrub layer"],
-    answer: "Canopy"
+    question: "The climax near Tindni village is being controlled by disturbance by cattle. This is an example of:",
+    options: [
+      "Climatic climax",
+      "Edaphic climax",
+      "Disclimax",
+      "Catastrophic climax"
+    ],
+    answer: "Disclimax"
   },
   {
     id: '4',
-    question: "What is 'silviculture'?",
-    options: ["Study of fish", "Practice of controlling forest growth", "Mining in forests", "Urban planning"],
-    answer: "Practice of controlling forest growth"
+    question: "Which of these depicts correctly the lithosere primary succession?",
+    options: [
+      "Rock → Crustose lichen → Foliose lichen → Moss → Herbaceous stage → Shrub → Woodland → Climax",
+      "Rock → Foliose lichen → Crustose lichen → Moss → Herbaceous stage → Shrub → Woodland → Climax",
+      "Moss → Crustose lichen → Foliose lichen → Rock → Herbaceous stage → Shrub → Woodland → Climax",
+      "Rock → Crustose lichen → Foliose lichen → Shrub → Herbaceous stage → Moss → Woodland → Climax"
+    ],
+    answer: "Rock → Crustose lichen → Foliose lichen → Moss → Herbaceous stage → Shrub → Woodland → Climax"
   },
   {
     id: '5',
-    question: "Which type of forest is characterized by high rainfall and high biodiversity?",
-    options: ["Boreal forest", "Temperate forest", "Tropical rainforest", "Deciduous forest"],
-    answer: "Tropical rainforest"
+    question: "Which of these has the highest organic matter content?",
+    options: [
+      "Peaty soil",
+      "Alluvial soil",
+      "Saline soil",
+      "Red and yellow soil"
+    ],
+    answer: "Peaty soil"
   },
   {
     id: '6',
-    question: "What is the main cause of deforestation globally?",
-    options: ["Forest fires", "Agriculture expansion", "Mining", "Urbanization"],
-    answer: "Agriculture expansion"
+    question: "The term laterite soil is derived from Latin 'later' which means:",
+    options: [
+      "Red",
+      "Brick",
+      "Fertile",
+      "Infertile"
+    ],
+    answer: "Brick"
   },
   {
     id: '7',
-    question: "Which forest management technique involves removing only specific trees?",
-    options: ["Clear-cutting", "Selective logging", "Strip cutting", "Seed-tree cutting"],
-    answer: "Selective logging"
+    question: "Vertical arrangement of soil horizons is called:",
+    options: [
+      "Soil texture",
+      "Soil structure",
+      "Soil profile",
+      "Soil science"
+    ],
+    answer: "Soil profile"
   },
   {
     id: '8',
-    question: "What are 'carbon sinks' in the context of forests?",
-    options: ["Areas that release CO2", "Areas that absorb more CO2 than they release", "Underground water reservoirs", "Places where wood is burned"],
-    answer: "Areas that absorb more CO2 than they release"
+    question: "Hydrolysis is an example of:",
+    options: [
+      "Chemical weathering",
+      "Physical weathering",
+      "Biological weathering",
+      "None of the above"
+    ],
+    answer: "Chemical weathering"
   },
   {
     id: '9',
-    question: "Which of these is an indicator of a healthy forest ecosystem?",
-    options: ["Monoculture", "Presence of keystone species", "Lack of decomposers", "High rate of invasive species"],
-    answer: "Presence of keystone species"
+    question: "For a tree with dbh = 45.6 cm, height = 27 m and total stem volume of 1.78 cum, the artificial form factor for the tree is:",
+    options: [
+      "0.1",
+      "0.2",
+      "0.3",
+      "0.4"
+    ],
+    answer: "0.4"
   },
   {
     id: '10',
-    question: "What is the term for the management of forests for multiple uses like timber, wildlife, and recreation?",
-    options: ["Single-use management", "Multiple-use management", "Preservation", "Exploitation"],
-    answer: "Multiple-use management"
+    question: "Choose the correct statement:",
+    options: [
+      "For a non-circular cross-section, girth tape over-estimates the sectional area",
+      "For a non-circular cross-section, girth tape under-estimates the sectional area",
+      "For a non-circular cross-section, girth tape correctly estimates the sectional area",
+      "None of these is a correct statement"
+    ],
+    answer: "For a non-circular cross-section, girth tape over-estimates the sectional area"
   }
 ];
