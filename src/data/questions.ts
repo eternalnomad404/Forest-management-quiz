@@ -1149,11 +1149,12 @@ export const QUESTIONS: Question[] = [
     id: '105',
     question: "Self ploughing character is seen in",
     options: [
+      "black cotton soil",
       "alluvial soil",
       "saline soil",
       "red and yellow soil"
     ],
-    answer: "alluvial soil"
+    answer: "black cotton soil"
   },
   {
     id: '106',
@@ -1319,5 +1320,115 @@ export const QUESTIONS: Question[] = [
       "soil science"
     ],
     answer: "soil profile"
+  },
+  {
+    id: '121',
+    question: "For false form factor, the reference for the base of the cylinder is",
+    options: [
+      "base of the tree",
+      "breast height",
+      "10% of tree height",
+      "20% of tree height"
+    ],
+    answer: "breast height"
+  },
+  {
+    id: '122',
+    question: "In India, the breast height is considered to be",
+    options: [
+      "1.37 m",
+      "1.47 m",
+      "1.57 m",
+      "2.47 m"
+    ],
+    answer: "1.37 m"
+  },
+  {
+    id: '123',
+    question: "3 trees are located in a sample plot of 15 m × 15 m. Their dbh are as under: dbh = 25 cm, 30 cm, 35 cm Find the stand basal area in sq m per Ha.",
+    options: [
+      "9.6",
+      "14.6",
+      "21.6",
+      "27.6"
+    ],
+    answer: "9.6"
+  },
+  {
+    id: '124',
+    question: "Measurement of height based on similar triangles comes under:",
+    options: [
+      "similar measurement",
+      "dissimilar measurement",
+      "direct measurement",
+      "indirect measurement"
+    ],
+    answer: "indirect measurement"
+  },
+  {
+    id: '125',
+    question: "In a triangle, the angle between base and hypotenuse, θ = 60° and the hypotenuse c = 2 cm. Find the length of the base b.",
+    options: [
+      "0.33",
+      "0.5",
+      "0.75",
+      "1"
+    ],
+    answer: "1"
+  },
+  {
+    id: '126',
+    question: "A tree has dbh of 25 cm. Find its basal area in sq m.",
+    options: [
+      ".049",
+      ".096",
+      ".149",
+      ".195"
+    ],
+    answer: ".049"
+  },
+  {
+    id: '127',
+    question: "For normal form factor, the reference for the base of the cylinder is",
+    options: [
+      "base of the tree",
+      "breast height",
+      "10% of tree height",
+      "20% of tree height"
+    ],
+    answer: "10% of tree height"
+  },
+  {
+    id: '128',
+    question: "A tree has dbh of 35 cm. Find its basal area in sq m.",
+    options: [
+      ".049",
+      ".096",
+      ".149",
+      ".195"
+    ],
+    answer: ".096"
+  },
+  {
+    id: '129',
+    question: "Diameter over bark (dob), diameter under bark (dub) and bark thickness (tb) are related as:",
+    options: [
+      "dob = dub + tb",
+      "dob = dub - tb",
+      "dob = dub + 2 × tb",
+      "dob = dub - 2 × tb"
+    ],
+    answer: "dob = dub + 2 × tb"
+  },
+  {
+    id: '130',
+    question: "Consider a stand of eucalyptus trees that are on average 30 cm in diameter and spaced on a regular 3 m grid. Find the spacing factor.",
+    options: [
+      "5",
+      "10",
+      "15",
+      "data insufficient"
+    ],
+    answer: "10"
   }
 ];

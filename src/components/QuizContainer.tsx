@@ -1,15 +1,111 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, RotateCcw, Trophy } from 'lucide-react';
 import { QUESTIONS } from '../data/questions';
 import QuestionCard from './QuestionCard';
 import ProgressIndicator from './ProgressIndicator';
 
+type SessionMode = 'sequence' | 'jumbled';
+
+function shuffleArray<T>(items: T[]): T[] {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+function hasSameOrder<T>(a: T[], b: T[]) {
+  if (a.length !== b.length) return false;
+  return a.every((item, index) => item === b[index]);
+}
+
+function shuffleWithVisibleChange<T>(items: T[]): T[] {
+  if (items.length <= 1) return [...items];
+  let shuffled = shuffleArray(items);
+  let attempts = 0;
+  while (hasSameOrder(items, shuffled) && attempts < 5) {
+    shuffled = shuffleArray(items);
+    attempts += 1;
+  }
+  return shuffled;
+}
+
+function buildSessionQuestions(mode: SessionMode) {
+  if (mode === 'sequence') {
+    return QUESTIONS;
+  }
+
+  const withShuffledOptions = QUESTIONS.map(question => ({
+    ...question,
+    options: shuffleWithVisibleChange(question.options),
+  }));
+
+  return shuffleWithVisibleChange(withShuffledOptions);
+}
+
 export default function QuizContainer() {
-  const [activeQuestions, setActiveQuestions] = useState(QUESTIONS);
+  const [sessionMode, setSessionMode] = useState<SessionMode | null>(null);
+  const [sessionQuestions, setSessionQuestions] = useState<typeof QUESTIONS>([]);
+  const [activeQuestions, setActiveQuestions] = useState<typeof QUESTIONS>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<(string | null)[]>(new Array(QUESTIONS.length).fill(null));
+  const [answers, setAnswers] = useState<(string | null)[]>([]);
   const [isFinished, setIsFinished] = useState(false);
+
+  const startSession = (mode: SessionMode) => {
+    const preparedQuestions = buildSessionQuestions(mode);
+    setSessionMode(mode);
+    setSessionQuestions(preparedQuestions);
+    setActiveQuestions(preparedQuestions);
+    setCurrentIndex(0);
+    setAnswers(new Array(preparedQuestions.length).fill(null));
+    setIsFinished(false);
+  };
+
+  if (sessionMode === null) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-12">
+        <motion.div
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="bg-white rounded-3xl p-6 md:p-8 shadow-2xl border border-indigo-100"
+        >
+          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">
+            How do you want to attempt this quiz?
+          </h1>
+          <p className="text-gray-600 mb-7">
+            Pick a mode for this session. The selected mode stays active for retries too.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => startSession('sequence')}
+              className="w-full py-4 px-4 bg-indigo-600 text-white rounded-xl font-bold text-base md:text-lg hover:bg-indigo-700 transition-colors active:scale-[0.98]"
+            >
+              In Sequence
+            </button>
+            <button
+              onClick={() => startSession('jumbled')}
+              className="w-full py-4 px-4 bg-white text-indigo-700 border-2 border-indigo-200 rounded-xl font-bold text-base md:text-lg hover:bg-indigo-50 transition-colors active:scale-[0.98]"
+            >
+              Jumbled (HARD)
+            </button>
+          </div>
+          <div className="mt-6 text-center text-xs md:text-sm text-gray-500">
+            Made with ❤️ by{' '}
+            <a
+              href="https://www.linkedin.com/in/aman-jain-3a6609283/"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-indigo-700 hover:text-indigo-800 underline underline-offset-2"
+            >
+              Aman Jain
+            </a>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   const currentQuestion = activeQuestions[currentIndex];
   const selectedAnswer = answers[currentIndex];
@@ -28,7 +124,7 @@ export default function QuizContainer() {
     return answers[idx] !== question.answer;
   });
 
-  const handleSelectAnswer = useCallback((option: string) => {
+  const handleSelectAnswer = (option: string) => {
     if (isAnswered) return;
 
     setAnswers(prev => {
@@ -47,26 +143,26 @@ export default function QuizContainer() {
         }
       }, 300);
     }
-  }, [isAnswered, currentIndex, currentQuestion.answer, activeQuestions.length]);
+  };
 
-  const handleNext = useCallback(() => {
+  const handleNext = () => {
     if (currentIndex === activeQuestions.length - 1) {
       setIsFinished(true);
     } else {
       setCurrentIndex(prev => prev + 1);
     }
-  }, [currentIndex, activeQuestions.length]);
+  };
 
-  const handleBack = useCallback(() => {
+  const handleBack = () => {
     if (currentIndex > 0) {
       setCurrentIndex(prev => prev - 1);
     }
-  }, [currentIndex]);
+  };
 
   const handleRestart = () => {
-    setActiveQuestions(QUESTIONS);
+    setActiveQuestions(sessionQuestions);
     setCurrentIndex(0);
-    setAnswers(new Array(QUESTIONS.length).fill(null));
+    setAnswers(new Array(sessionQuestions.length).fill(null));
     setIsFinished(false);
   };
 
@@ -95,6 +191,9 @@ export default function QuizContainer() {
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Quiz Completed!</h2>
           <p className="text-gray-500 mb-6">Review your results and choose what to retry.</p>
+          <div className="mb-6 inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700">
+            Session Type: {sessionMode === 'jumbled' ? 'Jumbled' : 'In Sequence'}
+          </div>
           
           <div className="bg-indigo-50 rounded-2xl p-6 mb-5">
             <div className="text-sm text-indigo-600 font-semibold uppercase tracking-wider mb-1">Final Score</div>
@@ -143,6 +242,17 @@ export default function QuizContainer() {
               <RotateCcw className="w-5 h-5 shrink-0" />
               Restart Full Quiz
             </button>
+          </div>
+          <div className="mt-6 text-center text-xs md:text-sm text-gray-500">
+            Made with ❤️ by{' '}
+            <a
+              href="https://www.linkedin.com/in/aman-jain-3a6609283/"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-indigo-700 hover:text-indigo-800 underline underline-offset-2"
+            >
+              Aman Jain
+            </a>
           </div>
         </motion.div>
       </div>
@@ -193,6 +303,20 @@ export default function QuizContainer() {
           onSelect={handleSelectAnswer}
         />
       </AnimatePresence>
+      <div className="mt-6 text-center text-xs md:text-sm font-semibold uppercase tracking-wide text-indigo-100">
+        Session Type: {sessionMode === 'jumbled' ? 'Jumbled' : 'In Sequence'}
+      </div>
+      <div className="mt-2 text-center text-xs md:text-sm text-indigo-100/90">
+        Made with ❤️ by{' '}
+        <a
+          href="https://www.linkedin.com/in/aman-jain-3a6609283/"
+          target="_blank"
+          rel="noreferrer"
+          className="font-semibold underline underline-offset-2 hover:text-white"
+        >
+          Aman Jain
+        </a>
+      </div>
     </div>
   );
 }
