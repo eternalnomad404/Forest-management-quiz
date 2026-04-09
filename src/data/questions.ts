@@ -330,5 +330,445 @@ export const QUESTIONS: Question[] = [
       "secondary nutrient"
     ],
     answer: "micronutrient"
+  },
+  {
+    id: '31',
+    question: "The time of flight for LiDAR is 0.00001 sec. Find the distance of the object from the instrument.",
+    options: [
+      "500 m",
+      "1000 m",
+      "1500 m",
+      "2000 m"
+    ],
+    answer: "1500 m"
+  },
+  {
+    id: '32',
+    question: "A sampling procedure such that each possible combination of sampling units out of the population has the same chance of being selected is referred to as",
+    options: [
+      "Simple random sampling",
+      "Systematic sampling",
+      "Stratified sampling",
+      "Multistage sampling"
+    ],
+    answer: "Simple random sampling"
+  },
+  {
+    id: '33',
+    question: "This sampling employs a simple rule of selecting every kth unit starting with a number chosen at random from 1 to k as the random start. We're talking about",
+    options: [
+      "Simple random sampling",
+      "Systematic sampling",
+      "Stratified sampling",
+      "Multistage sampling"
+    ],
+    answer: "Systematic sampling"
+  },
+  {
+    id: '34',
+    question: "A list of sampling units is called a",
+    options: [
+      "frame",
+      "window",
+      "sample",
+      "population"
+    ],
+    answer: "frame"
+  },
+  {
+    id: '35',
+    question: "___ is how close the measured values are to the correct value.",
+    options: [
+      "Accuracy",
+      "Precision",
+      "Bias",
+      "Variance"
+    ],
+    answer: "Accuracy"
+  },
+  {
+    id: '36',
+    question: "Bathymetric LiDAR uses",
+    options: [
+      "far infrared light",
+      "near infrared light",
+      "orange light",
+      "green light"
+    ],
+    answer: "green light"
+  },
+  {
+    id: '37',
+    question: "___ is how close the measured values are to each other.",
+    options: [
+      "Accuracy",
+      "Precision",
+      "Bias",
+      "Variance"
+    ],
+    answer: "Precision"
+  },
+  {
+    id: '38',
+    question: "IMU stands for",
+    options: [
+      "Imperial metering unit",
+      "Inertial metering unit",
+      "Imperial measurement unit",
+      "Inertial measurement unit"
+    ],
+    answer: "Inertial measurement unit"
+  },
+  {
+    id: '39',
+    question: "The frequency of flyovers is an indicator of",
+    options: [
+      "spatial resolution",
+      "temporal resolution",
+      "spectral resolution",
+      "radiometric resolution"
+    ],
+    answer: "temporal resolution"
+  },
+  {
+    id: '40',
+    question: "Which of these is correct?",
+    options: [
+      "Plane surveying takes into account the true shape of the Earth and is used for smaller areas (< 250 sq km)",
+      "Plane surveying takes into account the true shape of the Earth and is used for larger areas (> 250 sq km)",
+      "Geodetic surveying takes into account the true shape of the Earth and is used for smaller areas (< 250 sq km)",
+      "Geodetic surveying takes into account the true shape of the Earth and is used for larger areas (> 250 sq km)"
+    ],
+    answer: "Geodetic surveying takes into account the true shape of the Earth and is used for larger areas (> 250 sq km)"
+  },
+  {
+    id: '41',
+    question: "The acronym HIPPO does not include",
+    options: [
+      "habitat loss",
+      "habitat enhancement",
+      "over-harvesting",
+      "human over-population"
+    ],
+    answer: "habitat enhancement"
+  },
+  {
+    id: '42',
+    question: "A scientist uses a trap to capture a monkey. In the context of Wildlife Protection Act 1972,",
+    options: [
+      "the trap is a weapon and capturing is hunting.",
+      "the trap is not a weapon and capturing is hunting.",
+      "the trap is a weapon and capturing is not hunting.",
+      "the trap is not a weapon and capturing is not hunting."
+    ],
+    answer: "the trap is a weapon and capturing is hunting."
+  },
+  {
+    id: '43',
+    question: "Which of these is a deterministic factor?",
+    options: [
+      "environmental variation",
+      "forest fire",
+      "death rate",
+      "diseases"
+    ],
+    answer: "death rate"
+  },
+  {
+    id: '44',
+    question: "The acronym HIPPO does not include",
+    options: [
+      "habitat loss",
+      "invasive species",
+      "pollination",
+      "pollution"
+    ],
+    answer: "pollination"
+  },
+  {
+    id: '45',
+    question: "In the formula I = PXAXT, T refers to",
+    options: [
+      "transference",
+      "time",
+      "technology",
+      "none of the above"
+    ],
+    answer: "technology"
+  },
+  {
+    id: '46',
+    question: "Invasive climbers increase the probability of which of these fire types?",
+    options: [
+      "ground fire",
+      "surface fire",
+      "ladder fire",
+      "firestorm"
+    ],
+    answer: "ladder fire"
+  },
+  {
+    id: '47',
+    question: "Which of these is a stochastic factor?",
+    options: [
+      "birth rate",
+      "death rate",
+      "population structure",
+      "forest fire"
+    ],
+    answer: "forest fire"
+  },
+  {
+    id: '48',
+    question: "Which of these forms the fire triangle?",
+    options: [
+      "fire, air, heat",
+      "fire, oxygen, wood",
+      "fuel, air, wood",
+      "fuel, oxygen, heat"
+    ],
+    answer: "fuel, oxygen, heat"
+  },
+  {
+    id: '49',
+    question: "In the formula I = PXAXT, P refers to",
+    options: [
+      "professional pressure",
+      "pollution pressure",
+      "population pressure",
+      "none of the above"
+    ],
+    answer: "population pressure"
+  },
+  {
+    id: '50',
+    question: "A veterinarian uses an immobilising gun to capture a deer. In the context of Wildlife Protection Act 1972,",
+    options: [
+      "the immobilising gun is a weapon and capturing is hunting.",
+      "the immobilising gun is not a weapon and capturing is hunting.",
+      "the immobilising gun is a weapon and capturing is not hunting.",
+      "the immobilising gun is not a weapon and capturing is not hunting."
+    ],
+    answer: "the immobilising gun is a weapon and capturing is hunting."
+  },
+  {
+    id: '51',
+    question: "The movement of seeds away from their place of seed production into a new area is called",
+    options: [
+      "translocation",
+      "migration",
+      "dispersal",
+      "drifting"
+    ],
+    answer: "dispersal"
+  },
+  {
+    id: '52',
+    question: "Which of these is not advantage of clear felling system",
+    options: [
+      "Simple system, easy and efficient operations",
+      "Allows for establishment of a more uniform crop",
+      "Increases soil erosion and landslides in hilly areas",
+      "Mimics natural processes of fire and large-scale insect attacks"
+    ],
+    answer: "Increases soil erosion and landslides in hilly areas"
+  },
+  {
+    id: '53',
+    question: "Ring weeding is primarily a feature of",
+    options: [
+      "natural regeneration",
+      "assisted natural regeneration",
+      "artificial regeneration by direct sowing",
+      "artificial regeneration by planting seedlings"
+    ],
+    answer: "assisted natural regeneration"
+  },
+  {
+    id: '54',
+    question: "Average age at which a tree is considered mature for felling is called as",
+    options: [
+      "crop age",
+      "felling age",
+      "rotation age",
+      "maturity age"
+    ],
+    answer: "rotation age"
+  },
+  {
+    id: '55',
+    question: "Which of these is not a feature of natural regeneration",
+    options: [
+      "low cost",
+      "less requirement of heavy machinery and labour",
+      "preservation of genetic variability",
+      "good control over genetic improvement"
+    ],
+    answer: "good control over genetic improvement"
+  },
+  {
+    id: '56',
+    question: "Tending is done during",
+    options: [
+      "early stage of life",
+      "middle stage of life",
+      "late stage of life",
+      "any stage of life"
+    ],
+    answer: "any stage of life"
+  },
+  {
+    id: '57',
+    question: "Which of these is the correct sequence of a silvicultural system?",
+    options: [
+      "Stand tending -> Regeneration -> Harvesting",
+      "Harvesting -> Stand tending -> Regeneration",
+      "Harvesting -> Regeneration -> Stand tending",
+      "Regeneration -> Harvesting -> Stand tending"
+    ],
+    answer: "Harvesting -> Regeneration -> Stand tending"
+  },
+  {
+    id: '58',
+    question: "Taungya regeneration is",
+    options: [
+      "natural regeneration",
+      "artificial regeneration with villagers",
+      "artificial regeneration with nomadic tribes",
+      "artificial regeneration with hunters and gatherers"
+    ],
+    answer: "artificial regeneration with villagers"
+  },
+  {
+    id: '59',
+    question: "A site was clear-cut. Which of these methods of regeneration cannot be used in a short time-frame?",
+    options: [
+      "natural regeneration",
+      "artificial regeneration by direct sowing",
+      "artificial regeneration by planting seedlings",
+      "artificial regeneration by transplanting trees"
+    ],
+    answer: "natural regeneration"
+  },
+  {
+    id: '60',
+    question: "Which of these is not a feature of natural regeneration",
+    options: [
+      "seed consumption by insects and seed feeders",
+      "little control over spacing and stand density",
+      "long time needed to regenerate forest",
+      "high requirement of heavy machinery and labour"
+    ],
+    answer: "high requirement of heavy machinery and labour"
+  },
+  {
+    id: '61',
+    question: "In group shelterwood system, the regeneration area is increased",
+    options: [
+      "centrifugally around gaps",
+      "centripetally around gaps",
+      "parallel to gaps",
+      "perpendicular to gaps"
+    ],
+    answer: "centrifugally around gaps"
+  },
+  {
+    id: '62',
+    question: "Which of these is the correct sequence for shelterwood system?",
+    options: [
+      "Preparatory felling ->Secondary felling -> Seedling felling -> Final felling",
+      "Preparatory felling -> Seedling felling -> Secondary felling -> Final felling",
+      "Preparatory felling ->Secondary felling -> Seeding felling -> Final felling",
+      "Preparatory felling -> Seeding felling -> Secondary felling -> Final felling"
+    ],
+    answer: "Preparatory felling -> Seeding felling -> Secondary felling -> Final felling"
+  },
+  {
+    id: '63',
+    question: "Shelterwood system results in",
+    options: [
+      "even aged stand with natural aesthetics",
+      "even aged stand with artificial aesthetics",
+      "uneven aged stand with natural aesthetics",
+      "uneven aged stand with artificial aesthetics"
+    ],
+    answer: "even aged stand with natural aesthetics"
+  },
+  {
+    id: '64',
+    question: "Catchment areas are best suited for",
+    options: [
+      "clear felling system",
+      "selection system",
+      "uniform shelterwood system",
+      "group shelterwood system"
+    ],
+    answer: "selection system"
+  },
+  {
+    id: '65',
+    question: "Trees not putting increment are removed during",
+    options: [
+      "preparatory felling",
+      "seeding felling",
+      "secondary felling",
+      "final felling"
+    ],
+    answer: "preparatory felling"
+  },
+  {
+    id: '66',
+    question: "Felling made with the object of opening the canopy to remove shelter and allow more light for the regenerated crop is",
+    options: [
+      "preparatory felling",
+      "seeding felling",
+      "secondary felling",
+      "final felling"
+    ],
+    answer: "secondary felling"
+  },
+  {
+    id: '67',
+    question: "For a crop with rotation age of 120 years, PB-III would have crop age",
+    options: [
+      "0-30 years",
+      "30-60 years",
+      "60-90 years",
+      "90-120 years"
+    ],
+    answer: "30-60 years"
+  },
+  {
+    id: '68',
+    question: "Clear felling system is not used for",
+    options: [
+      "light demanding species",
+      "shade bearer species",
+      "plain areas",
+      "plateau areas"
+    ],
+    answer: "shade bearer species"
+  },
+  {
+    id: '69',
+    question: "Close to nature forestry is a feature of",
+    options: [
+      "clear felling system",
+      "selection system",
+      "uniform shelterwood system",
+      "group shelterwood system"
+    ],
+    answer: "selection system"
+  },
+  {
+    id: '70',
+    question: "Inverse-J shaped number-diameter curves are seen in",
+    options: [
+      "clear felling system",
+      "selection system",
+      "uniform shelterwood system",
+      "group shelterwood system"
+    ],
+    answer: "selection system"
   }
 ];
