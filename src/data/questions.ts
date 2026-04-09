@@ -220,5 +220,115 @@ export const QUESTIONS: Question[] = [
       "Greek foris meaning trees"
     ],
     answer: "Latin foris meaning outside"
+  },
+  {
+    id: '21',
+    question: "Which of these is abiotic factor?",
+    options: [
+      "vines",
+      "trees",
+      "reptiles",
+      "water"
+    ],
+    answer: "water"
+  },
+  {
+    id: '22',
+    question: "A climax caused by wildfires is an example of",
+    options: [
+      "climatic climax",
+      "edaphic climax",
+      "disclimax",
+      "catastrophic climax"
+    ],
+    answer: "catastrophic climax"
+  },
+  {
+    id: '23',
+    question: "The study of life history / general features of forest crops with respect to environmental factors is called",
+    options: [
+      "foresticulture",
+      "monoculture",
+      "silviculture",
+      "silvics"
+    ],
+    answer: "silvics"
+  },
+  {
+    id: '24',
+    question: "The art and science of cultivating forest crops is called",
+    options: [
+      "foresticulture",
+      "monoculture",
+      "silviculture",
+      "silvics"
+    ],
+    answer: "silviculture"
+  },
+  {
+    id: '25',
+    question: "Which of these is not a characteristic of pioneer species",
+    options: [
+      "ability to grow on bare rocks",
+      "ability to tolerate extreme temperatures",
+      "large size",
+      "short life span"
+    ],
+    answer: "large size"
+  },
+  {
+    id: '26',
+    question: "At compensation point,",
+    options: [
+      "photosynthesis = respiration",
+      "photosynthesis > respiration",
+      "photosynthesis < respiration",
+      "none of these"
+    ],
+    answer: "photosynthesis = respiration"
+  },
+  {
+    id: '27',
+    question: "Net primary productivity is given by",
+    options: [
+      "APAR + LUE",
+      "APAR X LUE",
+      "APAR - LUE",
+      "APAR ÷ LUE"
+    ],
+    answer: "APAR X LUE"
+  },
+  {
+    id: '28',
+    question: "Lithosere is an example of",
+    options: [
+      "hydrosere",
+      "xerosere",
+      "psammosere",
+      "halosere"
+    ],
+    answer: "xerosere"
+  },
+  {
+    id: '29',
+    question: "Practical application of scientific, technical and economic principles of forestry comes under which branch of forestry?",
+    options: [
+      "forest management",
+      "forest economics",
+      "forest mensuration",
+      "forest protection"
+    ],
+    answer: "forest management"
+  },
+  {
+    id: '30',
+    question: "In the context of plant nutrition, boron is",
+    options: [
+      "macronutrient",
+      "micronutrient",
+      "primary nutrient",
+      "secondary nutrient"
+    ],
+    answer: "micronutrient"
   }
 ];

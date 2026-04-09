@@ -36,7 +36,18 @@ export default function QuizContainer() {
       newAnswers[currentIndex] = option;
       return newAnswers;
     });
-  }, [isAnswered, currentIndex]);
+
+    // Auto-advance quickly only when the selected answer is correct.
+    if (option === currentQuestion.answer) {
+      window.setTimeout(() => {
+        if (currentIndex === activeQuestions.length - 1) {
+          setIsFinished(true);
+        } else {
+          setCurrentIndex(prev => prev + 1);
+        }
+      }, 300);
+    }
+  }, [isAnswered, currentIndex, currentQuestion.answer, activeQuestions.length]);
 
   const handleNext = useCallback(() => {
     if (currentIndex === activeQuestions.length - 1) {
