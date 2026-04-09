@@ -1100,5 +1100,224 @@ export const QUESTIONS: Question[] = [
       "extinct species"
     ],
     answer: "keystone species"
+  },
+  {
+    id: '101',
+    question: "Thermal stresses lead to",
+    options: [
+      "chemical weathering",
+      "physical weathering",
+      "biological weathering",
+      "none of the above"
+    ],
+    answer: "physical weathering"
+  },
+  {
+    id: '102',
+    question: "Cryofracturing is an example of",
+    options: [
+      "chemical weathering",
+      "physical weathering",
+      "biological weathering",
+      "none of the above"
+    ],
+    answer: "physical weathering"
+  },
+  {
+    id: '103',
+    question: "Carbonation is an example of",
+    options: [
+      "chemical weathering",
+      "physical weathering",
+      "biological weathering",
+      "none of the above"
+    ],
+    answer: "chemical weathering"
+  },
+  {
+    id: '104',
+    question: "Khadar is a type of",
+    options: [
+      "black cotton soil",
+      "alluvial soil",
+      "saline soil",
+      "red and yellow soil"
+    ],
+    answer: "alluvial soil"
+  },
+  {
+    id: '105',
+    question: "Self ploughing character is seen in",
+    options: [
+      "alluvial soil",
+      "saline soil",
+      "red and yellow soil"
+    ],
+    answer: "alluvial soil"
+  },
+  {
+    id: '106',
+    question: "In soil profile, C refers to",
+    options: [
+      "organic surface layer",
+      "topsoil",
+      "subsoil layer",
+      "substratum layer"
+    ],
+    answer: "substratum layer"
+  },
+  {
+    id: '107',
+    question: "Soil formation is dependent upon",
+    options: [
+      "vegetation",
+      "time",
+      "climate",
+      "all of the above"
+    ],
+    answer: "all of the above"
+  },
+  {
+    id: '108',
+    question: "Regur is a term for",
+    options: [
+      "black cotton soil",
+      "alluvial soil",
+      "saline soil",
+      "red and yellow soil"
+    ],
+    answer: "black cotton soil"
+  },
+  {
+    id: '109',
+    question: "Mechanical action of ocean waves is an example of",
+    options: [
+      "chemical weathering",
+      "physical weathering",
+      "biological weathering",
+      "none of the above"
+    ],
+    answer: "physical weathering"
+  },
+  {
+    id: '110',
+    question: "Bangar is a type of",
+    options: [
+      "black cotton soil",
+      "alluvial soil",
+      "saline soil",
+      "red and yellow soil"
+    ],
+    answer: "alluvial soil"
+  },
+  {
+    id: '111',
+    question: "The climax near Tindni village is being controlled by disturbance by cattle. This is an example of",
+    options: [
+      "climatic climax",
+      "edaphic climax",
+      "disclimax",
+      "catastrophic climax"
+    ],
+    answer: "disclimax"
+  },
+  {
+    id: '112',
+    question: "\"Science of relationships between organisms and their environments\" is the definition of.",
+    options: [
+      "conservation",
+      "preservation",
+      "environmentalism",
+      "ecology"
+    ],
+    answer: "ecology"
+  },
+  {
+    id: '113',
+    question: "\"allowing some places and some creatures to exist without significant human interference\" is a definition of",
+    options: [
+      "conservation",
+      "preservation",
+      "environmentalism",
+      "all of these"
+    ],
+    answer: "preservation"
+  },
+  {
+    id: '114',
+    question: "For absolute form factor, the reference for the base of the cylinder is",
+    options: [
+      "base of the tree",
+      "breast height",
+      "10% of tree height",
+      "20% of tree height"
+    ],
+    answer: "base of the tree"
+  },
+  {
+    id: '115',
+    question: "Which of these has the highest organic matter content?",
+    options: [
+      "peaty soil",
+      "alluvial soil",
+      "saline soil",
+      "red and yellow soil"
+    ],
+    answer: "peaty soil"
+  },
+  {
+    id: '116',
+    question: "For a tree with dbh = 45.6 cm, height = 27 m and total stem volume of 1.78 cum, the artificial form factor for the tree is:",
+    options: [
+      "0.1",
+      "0.2",
+      "0.3",
+      "0.4"
+    ],
+    answer: "0.4"
+  },
+  {
+    id: '117',
+    question: "\"Plant community, predominantly comprised of trees and other woody vegetation, usually with a closed canopy\" is",
+    options: [
+      "silvicultural definition of forests",
+      "FAO definition of forests",
+      "legal definition of forests",
+      "ecological definition of forests"
+    ],
+    answer: "FAO definition of forests"
+  },
+  {
+    id: '118',
+    question: "The term laterite soil is derived from Latin later which means",
+    options: [
+      "red",
+      "brick",
+      "fertile",
+      "infertile"
+    ],
+    answer: "brick"
+  },
+  {
+    id: '119',
+    question: "Choose the correct statement",
+    options: [
+      "For a non-circular cross-section, girth tape over-estimates the sectional area.",
+      "For a non-circular cross-section, girth tape under-estimates the sectional area.",
+      "For a non-circular cross-section, girth tape correctly estimates the sectional area.",
+      "None of these is a correct statement."
+    ],
+    answer: "For a non-circular cross-section, girth tape over-estimates the sectional area."
+  },
+  {
+    id: '120',
+    question: "Vertical arrangement of soil horizons is called",
+    options: [
+      "soil texture",
+      "soil structure",
+      "soil profile",
+      "soil science"
+    ],
+    answer: "soil profile"
   }
 ];
