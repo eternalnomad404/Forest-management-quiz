@@ -110,5 +110,115 @@ export const QUESTIONS: Question[] = [
       "None of these is a correct statement"
     ],
     answer: "For a non-circular cross-section, girth tape over-estimates the sectional area"
+  },
+  {
+    id: '11',
+    question: "Which of these is not a consumptive value?",
+    options: [
+      "timber",
+      "firewood",
+      "non-timber forest products",
+      "education"
+    ],
+    answer: "education"
+  },
+  {
+    id: '12',
+    question: "Tropical moist forests do not include",
+    options: [
+      "broadleaved forests",
+      "wet evergreen forests",
+      "semi-evergreen forests",
+      "moist deciduous forests"
+    ],
+    answer: "broadleaved forests"
+  },
+  {
+    id: '13',
+    question: "Montane sub-tropical forests do not include",
+    options: [
+      "broadleaved forests",
+      "pine forests",
+      "semi-evergreen forests",
+      "dry evergreen forests"
+    ],
+    answer: "semi-evergreen forests"
+  },
+  {
+    id: '14',
+    question: "According to the Supreme Court, the word forest must be understood according to its",
+    options: [
+      "biological meaning",
+      "ecological meaning",
+      "silvicultural meaning",
+      "dictionary meaning"
+    ],
+    answer: "dictionary meaning"
+  },
+  {
+    id: '15',
+    question: "Which of these is not a use value?",
+    options: [
+      "direct value",
+      "indirect value",
+      "option value",
+      "existence value"
+    ],
+    answer: "existence value"
+  },
+  {
+    id: '16',
+    question: "The value of leaving use and non-use values for offspring's or future generations is called",
+    options: [
+      "altruistic value",
+      "bequest value",
+      "existence value",
+      "option value"
+    ],
+    answer: "bequest value"
+  },
+  {
+    id: '17',
+    question: "Which of these is not a non-use value?",
+    options: [
+      "direct value",
+      "existence value",
+      "altruistic value",
+      "bequest value"
+    ],
+    answer: "direct value"
+  },
+  {
+    id: '18',
+    question: "According to the Supreme Court, the term forest land includes",
+    options: [
+      "some area recorded as forest in the Government record according to ownership",
+      "any area recorded as forest in the Government record according to ownership",
+      "some area recorded as forest in the Government record irrespective of ownership",
+      "any area recorded as forest in the Government record irrespective of ownership"
+    ],
+    answer: "any area recorded as forest in the Government record irrespective of ownership"
+  },
+  {
+    id: '19',
+    question: "Which of these is not a forest type found in India?",
+    options: [
+      "Mediterranean dry",
+      "Tropical dry",
+      "Montane temperate",
+      "Alpine"
+    ],
+    answer: "Mediterranean dry"
+  },
+  {
+    id: '20',
+    question: "The term 'forest' originates from",
+    options: [
+      "Latin foris meaning outside",
+      "Greek foris meaning outside",
+      "Latin foris meaning trees",
+      "Greek foris meaning trees"
+    ],
+    answer: "Latin foris meaning outside"
   }
 ];
