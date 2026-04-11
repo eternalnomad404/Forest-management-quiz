@@ -5,10 +5,10 @@ import { QUESTIONS } from '../data/questions';
 import QuestionCard from './QuestionCard';
 import ProgressIndicator from './ProgressIndicator';
 
-type SessionMode = 'sequence' | 'jumbled';
+type SessionMode = 'sequence' | 'sequence_shuffled_options' | 'jumbled';
 type QuizScope = 'all' | 'assignment';
 
-const QUIZ_SESSION_STORAGE_KEY = 'forest-quiz-session-v2';
+const QUIZ_SESSION_STORAGE_KEY = 'forest-quiz-session-v3';
 
 const ASSIGNMENT_ID_RANGES_IN_ORDER = [
   [1, 10],     // Assignment 0
@@ -85,11 +85,20 @@ function getAssignmentQuestions(assignmentIndex: number): typeof QUESTIONS {
 }
 
 function buildAllQuestionsSession(mode: SessionMode): typeof QUESTIONS {
+  const ordered = getOrderedAllQuestions();
+
   if (mode === 'sequence') {
-    return getOrderedAllQuestions();
+    return ordered;
   }
 
-  const ordered = getOrderedAllQuestions();
+  if (mode === 'sequence_shuffled_options') {
+    return ordered.map(question => ({
+      ...question,
+      options: shuffleWithVisibleChange(question.options),
+    }));
+  }
+
+  // jumbled: question order + option order both shuffled
   const withShuffledOptions = ordered.map(question => ({
     ...question,
     options: shuffleWithVisibleChange(question.options),
@@ -178,6 +187,7 @@ export default function QuizContainer() {
       const validMode =
         parsed.sessionMode === null ||
         parsed.sessionMode === 'sequence' ||
+        parsed.sessionMode === 'sequence_shuffled_options' ||
         parsed.sessionMode === 'jumbled';
       const validSessionQuestions = Array.isArray(parsed.sessionQuestions) &&
         parsed.sessionQuestions.every(isValidQuestionShape);
@@ -267,6 +277,19 @@ export default function QuizContainer() {
     setSessionMode(null);
   };
 
+  /** Leave active or finished quiz → previous step (mode picker or assignment grid). */
+  const exitToPreviousQuizStep = () => {
+    setSessionMode(null);
+    setSessionQuestions([]);
+    setActiveQuestions([]);
+    setCurrentIndex(0);
+    setAnswers([]);
+    setIsFinished(false);
+    if (quizScope === 'assignment') {
+      setSelectedAssignmentIndex(null);
+    }
+  };
+
   const startAllQuestionsSession = (mode: SessionMode) => {
     const preparedQuestions = buildAllQuestionsSession(mode);
     setSessionMode(mode);
@@ -350,7 +373,7 @@ export default function QuizContainer() {
             All questions — how to attempt?
           </h1>
           <p className="text-gray-600 mb-7">
-            Choose order for all 130 questions. Your choice stays for this session, including retries.
+            Choose how to attempt all 130 questions. Your choice stays for this session, including retries.
           </p>
           <div className="space-y-3">
             <button
@@ -359,6 +382,13 @@ export default function QuizContainer() {
               className="w-full py-4 px-4 bg-indigo-600 text-white rounded-xl font-bold text-base md:text-lg hover:bg-indigo-700 transition-colors active:scale-[0.98]"
             >
               In Sequence
+            </button>
+            <button
+              type="button"
+              onClick={() => startAllQuestionsSession('sequence_shuffled_options')}
+              className="w-full py-4 px-4 bg-white text-indigo-700 border-2 border-indigo-200 rounded-xl font-bold text-base md:text-lg hover:bg-indigo-50 transition-colors active:scale-[0.98] text-center leading-snug"
+            >
+              Sequential · Shuffled options
             </button>
             <button
               type="button"
@@ -436,7 +466,9 @@ export default function QuizContainer() {
       ? `Assignment ${selectedAssignmentIndex} · In Sequence`
       : sessionMode === 'jumbled'
         ? 'All questions · Jumbled'
-        : 'All questions · In Sequence';
+        : sessionMode === 'sequence_shuffled_options'
+          ? 'All questions · Sequential · Shuffled options'
+          : 'All questions · In Sequence';
 
   const handleSelectAnswer = (option: string) => {
     if (isAnswered) return;
@@ -514,6 +546,14 @@ export default function QuizContainer() {
             </span>
           </div>
 
+          <button
+            type="button"
+            onClick={exitToPreviousQuizStep}
+            className="mb-5 w-full text-sm font-semibold text-indigo-600 hover:text-indigo-800"
+          >
+            ← Back to attempt options
+          </button>
+
           <div className="bg-indigo-50 rounded-2xl p-6 mb-5">
             <div className="text-sm text-indigo-600 font-semibold uppercase tracking-wider mb-1">Final Score</div>
             <div className="text-5xl font-black text-indigo-900">
@@ -579,6 +619,15 @@ export default function QuizContainer() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 md:py-10">
+      <div className="mb-3 flex justify-center">
+        <button
+          type="button"
+          onClick={exitToPreviousQuizStep}
+          className="text-sm font-semibold text-indigo-100 hover:text-white underline underline-offset-2"
+        >
+          ← Back to attempt options
+        </button>
+      </div>
       <div className="mb-6">
         <div className="flex items-center justify-between bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/20">
           <button
