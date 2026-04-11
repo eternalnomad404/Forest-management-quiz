@@ -398,7 +398,6 @@ export default function QuizContainer() {
               Jumbled (HARD)
             </button>
           </div>
-          <CreditFooter />
         </motion.div>
       </div>
     );
@@ -438,7 +437,6 @@ export default function QuizContainer() {
               </button>
             ))}
           </div>
-          <CreditFooter />
         </motion.div>
       </div>
     );
