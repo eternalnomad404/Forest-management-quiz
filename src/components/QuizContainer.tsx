@@ -6,7 +6,9 @@ import QuestionCard from './QuestionCard';
 import ProgressIndicator from './ProgressIndicator';
 
 type SessionMode = 'sequence' | 'jumbled';
-const QUIZ_SESSION_STORAGE_KEY = 'forest-quiz-session-v1';
+type QuizScope = 'all' | 'assignment';
+
+const QUIZ_SESSION_STORAGE_KEY = 'forest-quiz-session-v2';
 
 const ASSIGNMENT_ID_RANGES_IN_ORDER = [
   [1, 10],     // Assignment 0
@@ -23,6 +25,8 @@ const ASSIGNMENT_ID_RANGES_IN_ORDER = [
   [91, 100],   // Assignment 11
   [111, 120],  // Assignment 12
 ] as const;
+
+const ASSIGNMENT_COUNT = ASSIGNMENT_ID_RANGES_IN_ORDER.length;
 
 function shuffleArray<T>(items: T[]): T[] {
   const shuffled = [...items];
@@ -49,28 +53,44 @@ function shuffleWithVisibleChange<T>(items: T[]): T[] {
   return shuffled;
 }
 
-function buildSessionQuestions(mode: SessionMode) {
+function getOrderedAllQuestions(): typeof QUESTIONS {
+  const byId = new Map(QUESTIONS.map(question => [Number(question.id), question]));
+  const orderedQuestions = ASSIGNMENT_ID_RANGES_IN_ORDER.flatMap(([start, end]) => {
+    const group = [];
+    for (let id = start; id <= end; id += 1) {
+      const question = byId.get(id);
+      if (question) group.push(question);
+    }
+    return group;
+  });
+
+  const orderedIds = new Set(orderedQuestions.map(question => question.id));
+  const leftovers = QUESTIONS
+    .filter(question => !orderedIds.has(question.id))
+    .sort((a, b) => Number(a.id) - Number(b.id));
+
+  return [...orderedQuestions, ...leftovers];
+}
+
+function getAssignmentQuestions(assignmentIndex: number): typeof QUESTIONS {
+  const range = ASSIGNMENT_ID_RANGES_IN_ORDER[assignmentIndex];
+  if (!range) return [];
+  const byId = new Map(QUESTIONS.map(question => [Number(question.id), question]));
+  const group = [];
+  for (let id = range[0]; id <= range[1]; id += 1) {
+    const question = byId.get(id);
+    if (question) group.push(question);
+  }
+  return group;
+}
+
+function buildAllQuestionsSession(mode: SessionMode): typeof QUESTIONS {
   if (mode === 'sequence') {
-    const byId = new Map(QUESTIONS.map(question => [Number(question.id), question]));
-    const orderedQuestions = ASSIGNMENT_ID_RANGES_IN_ORDER.flatMap(([start, end]) => {
-      const group = [];
-      for (let id = start; id <= end; id += 1) {
-        const question = byId.get(id);
-        if (question) group.push(question);
-      }
-      return group;
-    });
-
-    // Include any unexpected question IDs at the end, sorted numerically.
-    const orderedIds = new Set(orderedQuestions.map(question => question.id));
-    const leftovers = QUESTIONS
-      .filter(question => !orderedIds.has(question.id))
-      .sort((a, b) => Number(a.id) - Number(b.id));
-
-    return [...orderedQuestions, ...leftovers];
+    return getOrderedAllQuestions();
   }
 
-  const withShuffledOptions = QUESTIONS.map(question => ({
+  const ordered = getOrderedAllQuestions();
+  const withShuffledOptions = ordered.map(question => ({
     ...question,
     options: shuffleWithVisibleChange(question.options),
   }));
@@ -95,8 +115,26 @@ function isValidQuestionShape(value: unknown): value is {
   );
 }
 
+function CreditFooter({ className = '' }: { className?: string }) {
+  return (
+    <div className={`mt-6 text-center text-xs md:text-sm text-gray-500 ${className}`}>
+      Made with ❤️ by{' '}
+      <a
+        href="https://www.linkedin.com/in/aman-jain-3a6609283/"
+        target="_blank"
+        rel="noreferrer"
+        className="font-semibold text-indigo-700 hover:text-indigo-800 underline underline-offset-2"
+      >
+        Aman Jain
+      </a>
+    </div>
+  );
+}
+
 export default function QuizContainer() {
   const [isHydrated, setIsHydrated] = useState(false);
+  const [quizScope, setQuizScope] = useState<QuizScope | null>(null);
+  const [selectedAssignmentIndex, setSelectedAssignmentIndex] = useState<number | null>(null);
   const [sessionMode, setSessionMode] = useState<SessionMode | null>(null);
   const [sessionQuestions, setSessionQuestions] = useState<typeof QUESTIONS>([]);
   const [activeQuestions, setActiveQuestions] = useState<typeof QUESTIONS>([]);
@@ -113,7 +151,9 @@ export default function QuizContainer() {
       }
 
       const parsed = JSON.parse(raw) as {
-        sessionMode: SessionMode;
+        quizScope?: QuizScope;
+        selectedAssignmentIndex?: number | null;
+        sessionMode: SessionMode | null;
         sessionQuestions: unknown[];
         activeQuestions: unknown[];
         currentIndex: number;
@@ -121,7 +161,24 @@ export default function QuizContainer() {
         isFinished: boolean;
       };
 
-      const validMode = parsed.sessionMode === 'sequence' || parsed.sessionMode === 'jumbled';
+      const scope: QuizScope | null =
+        parsed.quizScope === 'all' || parsed.quizScope === 'assignment'
+          ? parsed.quizScope
+          : parsed.sessionMode !== null
+            ? 'all'
+            : null;
+
+      const assignmentIdx =
+        typeof parsed.selectedAssignmentIndex === 'number' &&
+        parsed.selectedAssignmentIndex >= 0 &&
+        parsed.selectedAssignmentIndex < ASSIGNMENT_COUNT
+          ? parsed.selectedAssignmentIndex
+          : null;
+
+      const validMode =
+        parsed.sessionMode === null ||
+        parsed.sessionMode === 'sequence' ||
+        parsed.sessionMode === 'jumbled';
       const validSessionQuestions = Array.isArray(parsed.sessionQuestions) &&
         parsed.sessionQuestions.every(isValidQuestionShape);
       const validActiveQuestions = Array.isArray(parsed.activeQuestions) &&
@@ -139,6 +196,8 @@ export default function QuizContainer() {
         validAnswers &&
         validIsFinished
       ) {
+        setQuizScope(scope);
+        setSelectedAssignmentIndex(assignmentIdx);
         setSessionMode(parsed.sessionMode);
         setSessionQuestions(parsed.sessionQuestions);
         setActiveQuestions(parsed.activeQuestions);
@@ -156,12 +215,14 @@ export default function QuizContainer() {
   useEffect(() => {
     if (!isHydrated) return;
 
-    if (sessionMode === null) {
+    if (quizScope === null && sessionMode === null) {
       window.sessionStorage.removeItem(QUIZ_SESSION_STORAGE_KEY);
       return;
     }
 
     const payload = {
+      quizScope,
+      selectedAssignmentIndex,
       sessionMode,
       sessionQuestions,
       activeQuestions,
@@ -171,11 +232,56 @@ export default function QuizContainer() {
     };
 
     window.sessionStorage.setItem(QUIZ_SESSION_STORAGE_KEY, JSON.stringify(payload));
-  }, [isHydrated, sessionMode, sessionQuestions, activeQuestions, currentIndex, answers, isFinished]);
+  }, [
+    isHydrated,
+    quizScope,
+    selectedAssignmentIndex,
+    sessionMode,
+    sessionQuestions,
+    activeQuestions,
+    currentIndex,
+    answers,
+    isFinished,
+  ]);
 
-  const startSession = (mode: SessionMode) => {
-    const preparedQuestions = buildSessionQuestions(mode);
+  const goToScopeScreen = () => {
+    setQuizScope(null);
+    setSelectedAssignmentIndex(null);
+    setSessionMode(null);
+    setSessionQuestions([]);
+    setActiveQuestions([]);
+    setCurrentIndex(0);
+    setAnswers([]);
+    setIsFinished(false);
+  };
+
+  const chooseAllQuestions = () => {
+    setQuizScope('all');
+    setSelectedAssignmentIndex(null);
+    setSessionMode(null);
+  };
+
+  const chooseAssignmentWise = () => {
+    setQuizScope('assignment');
+    setSelectedAssignmentIndex(null);
+    setSessionMode(null);
+  };
+
+  const startAllQuestionsSession = (mode: SessionMode) => {
+    const preparedQuestions = buildAllQuestionsSession(mode);
     setSessionMode(mode);
+    setSessionQuestions(preparedQuestions);
+    setActiveQuestions(preparedQuestions);
+    setCurrentIndex(0);
+    setAnswers(new Array(preparedQuestions.length).fill(null));
+    setIsFinished(false);
+  };
+
+  const startAssignmentQuiz = (assignmentIndex: number) => {
+    const preparedQuestions = getAssignmentQuestions(assignmentIndex);
+    if (preparedQuestions.length === 0) return;
+    setSelectedAssignmentIndex(assignmentIndex);
+    setSessionMode('sequence');
     setSessionQuestions(preparedQuestions);
     setActiveQuestions(preparedQuestions);
     setCurrentIndex(0);
@@ -187,7 +293,8 @@ export default function QuizContainer() {
     return null;
   }
 
-  if (sessionMode === null) {
+  // Screen 1: scope
+  if (quizScope === null) {
     return (
       <div className="max-w-xl mx-auto px-4 py-12">
         <motion.div
@@ -196,36 +303,112 @@ export default function QuizContainer() {
           className="bg-white rounded-3xl p-6 md:p-8 shadow-2xl border border-indigo-100"
         >
           <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">
-            How do you want to attempt this quiz?
+            How do you want to practice?
           </h1>
           <p className="text-gray-600 mb-7">
-            Pick a mode for this session. The selected mode stays active for retries too.
+            Pick one assignment at a time (in order), or attempt every question together. You can repeat as many times as you like.
           </p>
           <div className="space-y-3">
             <button
-              onClick={() => startSession('sequence')}
+              type="button"
+              onClick={chooseAssignmentWise}
+              className="w-full py-4 px-4 bg-indigo-600 text-white rounded-xl font-bold text-base md:text-lg hover:bg-indigo-700 transition-colors active:scale-[0.98]"
+            >
+              Assignment wise
+            </button>
+            <button
+              type="button"
+              onClick={chooseAllQuestions}
+              className="w-full py-4 px-4 bg-white text-indigo-700 border-2 border-indigo-200 rounded-xl font-bold text-base md:text-lg hover:bg-indigo-50 transition-colors active:scale-[0.98]"
+            >
+              All questions
+            </button>
+          </div>
+          <CreditFooter />
+        </motion.div>
+      </div>
+    );
+  }
+
+  // All questions: mode picker
+  if (quizScope === 'all' && sessionMode === null) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-12">
+        <motion.div
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="bg-white rounded-3xl p-6 md:p-8 shadow-2xl border border-indigo-100"
+        >
+          <button
+            type="button"
+            onClick={goToScopeScreen}
+            className="mb-4 text-sm font-semibold text-indigo-600 hover:text-indigo-800"
+          >
+            ← Back
+          </button>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">
+            All questions — how to attempt?
+          </h1>
+          <p className="text-gray-600 mb-7">
+            Choose order for all 130 questions. Your choice stays for this session, including retries.
+          </p>
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => startAllQuestionsSession('sequence')}
               className="w-full py-4 px-4 bg-indigo-600 text-white rounded-xl font-bold text-base md:text-lg hover:bg-indigo-700 transition-colors active:scale-[0.98]"
             >
               In Sequence
             </button>
             <button
-              onClick={() => startSession('jumbled')}
+              type="button"
+              onClick={() => startAllQuestionsSession('jumbled')}
               className="w-full py-4 px-4 bg-white text-indigo-700 border-2 border-indigo-200 rounded-xl font-bold text-base md:text-lg hover:bg-indigo-50 transition-colors active:scale-[0.98]"
             >
               Jumbled (HARD)
             </button>
           </div>
-          <div className="mt-6 text-center text-xs md:text-sm text-gray-500">
-            Made with ❤️ by{' '}
-            <a
-              href="https://www.linkedin.com/in/aman-jain-3a6609283/"
-              target="_blank"
-              rel="noreferrer"
-              className="font-semibold text-indigo-700 hover:text-indigo-800 underline underline-offset-2"
-            >
-              Aman Jain
-            </a>
+          <CreditFooter />
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Assignment wise: pick assignment
+  if (quizScope === 'assignment' && sessionMode === null) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-12">
+        <motion.div
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="bg-white rounded-3xl p-6 md:p-8 shadow-2xl border border-indigo-100"
+        >
+          <button
+            type="button"
+            onClick={goToScopeScreen}
+            className="mb-4 text-sm font-semibold text-indigo-600 hover:text-indigo-800"
+          >
+            ← Back
+          </button>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">
+            Choose an assignment
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Questions play in sequence for that assignment only. Retry or pick another assignment anytime.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 md:gap-3 max-h-[min(52vh,420px)] overflow-y-auto pr-1 -mr-1">
+            {Array.from({ length: ASSIGNMENT_COUNT }, (_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => startAssignmentQuiz(i)}
+                className="py-3 px-2 rounded-xl border-2 border-indigo-100 bg-indigo-50/50 text-indigo-900 font-bold text-sm md:text-base hover:bg-indigo-100 hover:border-indigo-200 transition-colors active:scale-[0.98]"
+              >
+                Assignment {i}
+              </button>
+            ))}
           </div>
+          <CreditFooter />
         </motion.div>
       </div>
     );
@@ -248,6 +431,13 @@ export default function QuizContainer() {
     return answers[idx] !== question.answer;
   });
 
+  const sessionTypeLabel =
+    quizScope === 'assignment' && selectedAssignmentIndex !== null
+      ? `Assignment ${selectedAssignmentIndex} · In Sequence`
+      : sessionMode === 'jumbled'
+        ? 'All questions · Jumbled'
+        : 'All questions · In Sequence';
+
   const handleSelectAnswer = (option: string) => {
     if (isAnswered) return;
 
@@ -257,7 +447,6 @@ export default function QuizContainer() {
       return newAnswers;
     });
 
-    // Auto-advance quickly only when the selected answer is correct.
     if (option === currentQuestion.answer) {
       window.setTimeout(() => {
         if (currentIndex === activeQuestions.length - 1) {
@@ -302,6 +491,10 @@ export default function QuizContainer() {
     setIsFinished(false);
   };
 
+  if (!currentQuestion) {
+    return null;
+  }
+
   if (isFinished) {
     return (
       <div className="max-w-lg mx-auto px-4 py-10 text-center">
@@ -315,10 +508,12 @@ export default function QuizContainer() {
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Quiz Completed!</h2>
           <p className="text-gray-500 mb-6">Review your results and choose what to retry.</p>
-          <div className="mb-6 inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700">
-            Session Type: {sessionMode === 'jumbled' ? 'Jumbled' : 'In Sequence'}
+          <div className="mb-6 inline-flex flex-wrap items-center justify-center gap-2">
+            <span className="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700">
+              {sessionTypeLabel}
+            </span>
           </div>
-          
+
           <div className="bg-indigo-50 rounded-2xl p-6 mb-5">
             <div className="text-sm text-indigo-600 font-semibold uppercase tracking-wider mb-1">Final Score</div>
             <div className="text-5xl font-black text-indigo-900">
@@ -352,6 +547,7 @@ export default function QuizContainer() {
 
           <div className="space-y-3">
             <button
+              type="button"
               onClick={handleRetryWrongOnly}
               disabled={wrongQuestions.length === 0}
               className="w-full py-4 px-4 bg-indigo-600 text-white rounded-xl font-bold text-base md:text-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-indigo-200 active:scale-[0.98] flex items-center justify-center gap-2 text-center"
@@ -360,24 +556,22 @@ export default function QuizContainer() {
               Retry Incorrect / Unanswered Only
             </button>
             <button
+              type="button"
               onClick={handleRestart}
               className="w-full py-4 px-4 bg-white text-indigo-700 border-2 border-indigo-200 rounded-xl font-bold text-base md:text-lg hover:bg-indigo-50 transition-colors active:scale-[0.98] flex items-center justify-center gap-2 text-center"
             >
               <RotateCcw className="w-5 h-5 shrink-0" />
-              Restart Full Quiz
+              {quizScope === 'assignment' ? 'Restart this assignment' : 'Restart full quiz'}
+            </button>
+            <button
+              type="button"
+              onClick={goToScopeScreen}
+              className="w-full py-3 text-sm font-semibold text-indigo-600 hover:text-indigo-800"
+            >
+              Change practice option
             </button>
           </div>
-          <div className="mt-6 text-center text-xs md:text-sm text-gray-500">
-            Made with ❤️ by{' '}
-            <a
-              href="https://www.linkedin.com/in/aman-jain-3a6609283/"
-              target="_blank"
-              rel="noreferrer"
-              className="font-semibold text-indigo-700 hover:text-indigo-800 underline underline-offset-2"
-            >
-              Aman Jain
-            </a>
-          </div>
+          <CreditFooter />
         </motion.div>
       </div>
     );
@@ -388,6 +582,7 @@ export default function QuizContainer() {
       <div className="mb-6">
         <div className="flex items-center justify-between bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/20">
           <button
+            type="button"
             onClick={handleBack}
             disabled={currentIndex === 0}
             className="p-3 rounded-xl text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
@@ -397,13 +592,14 @@ export default function QuizContainer() {
           </button>
 
           <div className="flex-1 px-4">
-            <ProgressIndicator 
-              current={currentIndex + 1} 
-              total={activeQuestions.length} 
+            <ProgressIndicator
+              current={currentIndex + 1}
+              total={activeQuestions.length}
             />
           </div>
 
           <button
+            type="button"
             onClick={handleNext}
             className="p-3 rounded-xl text-white hover:bg-white/10 transition-all active:scale-90"
             aria-label="Next Question"
@@ -423,7 +619,7 @@ export default function QuizContainer() {
         />
       </AnimatePresence>
       <div className="mt-6 text-center text-xs md:text-sm font-semibold uppercase tracking-wide text-indigo-100">
-        Session Type: {sessionMode === 'jumbled' ? 'Jumbled' : 'In Sequence'}
+        {sessionTypeLabel}
       </div>
     </div>
   );
