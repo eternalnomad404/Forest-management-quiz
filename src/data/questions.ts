@@ -1286,7 +1286,7 @@ export const QUESTIONS: Question[] = [
       "legal definition of forests",
       "ecological definition of forests"
     ],
-    answer: "FAO definition of forests"
+    answer: "ecological definition of forests"
   },
   {
     id: '118',
