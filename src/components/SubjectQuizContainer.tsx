@@ -401,7 +401,7 @@ export default function SubjectQuizContainer({
               onClick={() => startAllQuestionsSession('jumbled')}
               className="w-full py-4 px-4 bg-white text-indigo-700 border-2 border-indigo-200 rounded-xl font-bold text-base md:text-lg hover:bg-indigo-50 transition-colors active:scale-[0.98]"
             >
-              Jumbled (HARD)
+              Shuffled questions (Hard)
             </button>
           </div>
         </motion.div>
