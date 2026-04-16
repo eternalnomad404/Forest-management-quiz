@@ -164,7 +164,7 @@ export default function SubjectQuizContainer({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<(string | null)[]>([]);
   const [isFinished, setIsFinished] = useState(false);
-  const [isTimedMode, setIsTimedMode] = useState(false);
+  const [isTimedMode, setIsTimedMode] = useState(true);
   const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
 
   useEffect(() => {
