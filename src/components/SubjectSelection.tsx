@@ -9,17 +9,14 @@ interface SubjectSelectionProps {
 const SUBJECTS: Array<{
   key: SubjectKey;
   title: string;
-  badge: string;
 }> = [
   {
     key: 'forest-management',
     title: 'Forest Management',
-    badge: 'Live',
   },
   {
     key: 'human-computer-interactions',
     title: 'Human Computer Interactions',
-    badge: 'Live',
   },
 ];
 
@@ -46,9 +43,6 @@ export default function SubjectSelection({ onSelectSubject }: SubjectSelectionPr
               onClick={() => onSelectSubject(subject.key)}
               className="text-left rounded-2xl border-2 border-indigo-100 bg-indigo-50/50 p-5 hover:bg-indigo-100 hover:border-indigo-200 transition-colors active:scale-[0.99]"
             >
-              <div className="inline-flex items-center rounded-full border border-indigo-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-indigo-700 mb-3">
-                {subject.badge}
-              </div>
               <h2 className="text-xl font-bold text-indigo-900">{subject.title}</h2>
             </button>
           ))}
