@@ -28,7 +28,6 @@ export default function HciQuizContainer({ onBackToSubjects }: HciQuizContainerP
       onBackToSubjects={onBackToSubjects}
       scopeDescription="Pick one week at a time (in order), or attempt every question together. You can repeat as many times as you like."
       allQuestionsDescription={(count) => `Choose how to attempt all ${count} questions. Your choice stays for this session, including retries.`}
-      assignmentDescription="Questions play in sequence for that assignment only. Retry or pick another assignment anytime."
       assignmentButtonLabel={(index) => `Assignment ${index + 1}`}
       assignmentSessionLabel={(index) => `Assignment ${index + 1}`}
     />

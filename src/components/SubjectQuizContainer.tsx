@@ -15,7 +15,6 @@ interface SubjectQuizContainerProps {
   onBackToSubjects?: () => void;
   scopeDescription: string;
   allQuestionsDescription: (count: number) => string;
-  assignmentDescription: string;
   assignmentButtonLabel: (index: number) => string;
   assignmentSessionLabel: (index: number) => string;
 }
@@ -78,6 +77,17 @@ function CreditFooter({ className = '' }: { className?: string }) {
   );
 }
 
+function formatDuration(totalSeconds: number) {
+  const safe = Math.max(0, totalSeconds);
+  const hours = Math.floor(safe / 3600);
+  const minutes = Math.floor((safe % 3600) / 60);
+  const seconds = safe % 60;
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
+
 export default function SubjectQuizContainer({
   questions,
   sessionStorageKey,
@@ -85,7 +95,6 @@ export default function SubjectQuizContainer({
   onBackToSubjects,
   scopeDescription,
   allQuestionsDescription,
-  assignmentDescription,
   assignmentButtonLabel,
   assignmentSessionLabel,
 }: SubjectQuizContainerProps) {
@@ -155,6 +164,8 @@ export default function SubjectQuizContainer({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<(string | null)[]>([]);
   const [isFinished, setIsFinished] = useState(false);
+  const [isTimedMode, setIsTimedMode] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
 
   useEffect(() => {
     try {
@@ -173,6 +184,8 @@ export default function SubjectQuizContainer({
         currentIndex: number;
         answers: (string | null)[];
         isFinished: boolean;
+        isTimedMode?: boolean;
+        elapsedSeconds?: number;
       };
 
       const scope: QuizScope | null =
@@ -202,6 +215,10 @@ export default function SubjectQuizContainer({
       const validAnswers = Array.isArray(parsed.answers) &&
         parsed.answers.every(answer => answer === null || typeof answer === 'string');
       const validIsFinished = typeof parsed.isFinished === 'boolean';
+      const validTimedMode = typeof parsed.isTimedMode === 'boolean' || parsed.isTimedMode === undefined;
+      const validElapsedSeconds =
+        parsed.elapsedSeconds === undefined ||
+        (Number.isInteger(parsed.elapsedSeconds) && parsed.elapsedSeconds >= 0);
 
       if (
         validMode &&
@@ -209,7 +226,9 @@ export default function SubjectQuizContainer({
         validActiveQuestions &&
         validCurrentIndex &&
         validAnswers &&
-        validIsFinished
+        validIsFinished &&
+        validTimedMode &&
+        validElapsedSeconds
       ) {
         setQuizScope(scope);
         setSelectedAssignmentIndex(assignmentIdx);
@@ -219,6 +238,8 @@ export default function SubjectQuizContainer({
         setCurrentIndex(parsed.currentIndex);
         setAnswers(parsed.answers);
         setIsFinished(parsed.isFinished);
+        setIsTimedMode(parsed.isTimedMode ?? false);
+        setElapsedSeconds(parsed.elapsedSeconds ?? 0);
       }
     } catch {
       // Ignore corrupted session data and start fresh.
@@ -244,6 +265,8 @@ export default function SubjectQuizContainer({
       currentIndex,
       answers,
       isFinished,
+      isTimedMode,
+      elapsedSeconds,
     };
 
     window.sessionStorage.setItem(sessionStorageKey, JSON.stringify(payload));
@@ -258,7 +281,19 @@ export default function SubjectQuizContainer({
     currentIndex,
     answers,
     isFinished,
+    isTimedMode,
+    elapsedSeconds,
   ]);
+
+  useEffect(() => {
+    if (!isTimedMode || isFinished || sessionMode === null) return;
+
+    const timerId = window.setInterval(() => {
+      setElapsedSeconds(prev => prev + 1);
+    }, 1000);
+
+    return () => window.clearInterval(timerId);
+  }, [isTimedMode, isFinished, sessionMode]);
 
   const goToScopeScreen = () => {
     setQuizScope(null);
@@ -269,6 +304,7 @@ export default function SubjectQuizContainer({
     setCurrentIndex(0);
     setAnswers([]);
     setIsFinished(false);
+    setElapsedSeconds(0);
   };
 
   const chooseAllQuestions = () => {
@@ -303,6 +339,7 @@ export default function SubjectQuizContainer({
     setCurrentIndex(0);
     setAnswers(new Array(preparedQuestions.length).fill(null));
     setIsFinished(false);
+    setElapsedSeconds(0);
   };
 
   const startAssignmentQuiz = (assignmentIndex: number) => {
@@ -315,6 +352,7 @@ export default function SubjectQuizContainer({
     setCurrentIndex(0);
     setAnswers(new Array(preparedQuestions.length).fill(null));
     setIsFinished(false);
+    setElapsedSeconds(0);
   };
 
   if (!isHydrated) return null;
@@ -339,7 +377,22 @@ export default function SubjectQuizContainer({
           <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">
             How do you want to practice?
           </h1>
-          <p className="text-gray-600 mb-7">{scopeDescription}</p>
+          <div className="mb-5 rounded-xl border border-indigo-200 bg-indigo-50/70 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-sm font-bold text-indigo-900">Timed mode</div>
+              <button
+                type="button"
+                onClick={() => setIsTimedMode(prev => !prev)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+                  isTimedMode
+                    ? 'bg-indigo-600 text-white border-indigo-600'
+                    : 'bg-white text-indigo-700 border-indigo-200'
+                }`}
+              >
+                {isTimedMode ? 'ON' : 'OFF'}
+              </button>
+            </div>
+          </div>
           <div className="space-y-3">
             <button
               type="button"
@@ -427,8 +480,7 @@ export default function SubjectQuizContainer({
           <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">
             Choose an assignment
           </h1>
-          <p className="text-gray-600 mb-6">{assignmentDescription}</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 md:gap-3 max-h-[min(52vh,420px)] overflow-y-auto pr-1 -mr-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 md:gap-3 max-h-[min(52vh,420px)] overflow-y-auto pr-1 -mr-1 mt-2">
             {Array.from({ length: assignmentCount }, (_, i) => (
               <button
                 key={i}
@@ -506,6 +558,7 @@ export default function SubjectQuizContainer({
     setCurrentIndex(0);
     setAnswers(new Array(sessionQuestions.length).fill(null));
     setIsFinished(false);
+    setElapsedSeconds(0);
   };
 
   const handleRetryWrongOnly = () => {
@@ -517,6 +570,7 @@ export default function SubjectQuizContainer({
     setCurrentIndex(0);
     setAnswers(new Array(wrongQuestions.length).fill(null));
     setIsFinished(false);
+    setElapsedSeconds(0);
   };
 
   if (!currentQuestion) return null;
@@ -538,6 +592,11 @@ export default function SubjectQuizContainer({
             <span className="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700">
               {sessionTypeLabel}
             </span>
+            {isTimedMode && (
+              <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                Time taken: {formatDuration(elapsedSeconds)}
+              </span>
+            )}
           </div>
 
           <button
@@ -613,14 +672,21 @@ export default function SubjectQuizContainer({
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 md:py-10">
-      <div className="mb-3 flex justify-center">
+      <div className="mb-3 relative flex items-center justify-center min-h-8">
         <button
           type="button"
           onClick={exitToPreviousQuizStep}
-          className="text-sm font-semibold text-indigo-100 hover:text-white underline underline-offset-2"
+          className="text-sm font-semibold text-indigo-100 hover:text-white underline underline-offset-2 whitespace-nowrap"
         >
           ← Back to attempt options
         </button>
+        <div className="absolute right-0 top-1/2 -translate-y-1/2">
+          {isTimedMode && (
+            <div className="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs md:text-sm font-bold text-indigo-700">
+              ⏱ {formatDuration(elapsedSeconds)}
+            </div>
+          )}
+        </div>
       </div>
       <div className="mb-6">
         <div className="flex items-center justify-between bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/20">
