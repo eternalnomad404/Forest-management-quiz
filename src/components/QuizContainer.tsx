@@ -27,6 +27,8 @@ export default function QuizContainer({ onBackToSubjects }: QuizContainerProps) 
       questions={QUESTIONS}
       sessionStorageKey="forest-quiz-session-v3"
       assignmentIdRangesInOrder={ASSIGNMENT_ID_RANGES_IN_ORDER}
+      analyticsSubject="forest_management"
+      assignmentAnalyticsNumber={(index) => index}
       onBackToSubjects={onBackToSubjects}
       scopeDescription="Pick one assignment at a time (in order), or attempt every question together. You can repeat as many times as you like."
       allQuestionsDescription={() => 'Choose how to attempt all 130 questions. Your choice stays for this session, including retries.'}

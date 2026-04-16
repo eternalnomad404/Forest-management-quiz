@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, RotateCcw, Trophy } from 'lucide-react';
+import { track } from '@vercel/analytics';
 import QuestionCard from './QuestionCard';
 import ProgressIndicator from './ProgressIndicator';
 import { Question } from '../types';
@@ -12,6 +13,8 @@ interface SubjectQuizContainerProps {
   questions: Question[];
   sessionStorageKey: string;
   assignmentIdRangesInOrder: readonly (readonly [number, number])[];
+  analyticsSubject: string;
+  assignmentAnalyticsNumber: (index: number) => number;
   onBackToSubjects?: () => void;
   scopeDescription: string;
   allQuestionsDescription: (count: number) => string;
@@ -92,6 +95,8 @@ export default function SubjectQuizContainer({
   questions,
   sessionStorageKey,
   assignmentIdRangesInOrder,
+  analyticsSubject,
+  assignmentAnalyticsNumber,
   onBackToSubjects,
   scopeDescription,
   allQuestionsDescription,
@@ -99,6 +104,17 @@ export default function SubjectQuizContainer({
   assignmentSessionLabel,
 }: SubjectQuizContainerProps) {
   const assignmentCount = assignmentIdRangesInOrder.length;
+  const hasTrackedPracticeViewRef = useRef(false);
+  const hasTrackedAllModeViewRef = useRef(false);
+  const hasTrackedAssignmentViewRef = useRef(false);
+  const completedSessionSignatureRef = useRef<string | null>(null);
+
+  const emitEvent = (eventName: string, payload: Record<string, string | number | boolean | null>) => {
+    track(eventName, {
+      subject: analyticsSubject,
+      ...payload,
+    });
+  };
 
   const getOrderedAllQuestions = useMemo(() => {
     return () => {
@@ -295,7 +311,80 @@ export default function SubjectQuizContainer({
     return () => window.clearInterval(timerId);
   }, [isTimedMode, isFinished, sessionMode]);
 
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (quizScope === null && !hasTrackedPracticeViewRef.current) {
+      emitEvent('quiz_practice_options_viewed', {
+        timed_mode_enabled: isTimedMode,
+      });
+      hasTrackedPracticeViewRef.current = true;
+    }
+    if (quizScope !== null) {
+      hasTrackedPracticeViewRef.current = false;
+    }
+  }, [isHydrated, quizScope, isTimedMode]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (quizScope === 'all' && sessionMode === null && !hasTrackedAllModeViewRef.current) {
+      emitEvent('quiz_all_questions_mode_viewed', {
+        question_count: questions.length,
+      });
+      hasTrackedAllModeViewRef.current = true;
+    }
+    if (!(quizScope === 'all' && sessionMode === null)) {
+      hasTrackedAllModeViewRef.current = false;
+    }
+  }, [isHydrated, quizScope, sessionMode, questions.length]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (quizScope === 'assignment' && sessionMode === null && !hasTrackedAssignmentViewRef.current) {
+      emitEvent('quiz_assignment_picker_viewed', {
+        assignment_count: assignmentCount,
+      });
+      hasTrackedAssignmentViewRef.current = true;
+    }
+    if (!(quizScope === 'assignment' && sessionMode === null)) {
+      hasTrackedAssignmentViewRef.current = false;
+    }
+  }, [isHydrated, quizScope, sessionMode, assignmentCount]);
+
+  useEffect(() => {
+    if (!isFinished || activeQuestions.length === 0) return;
+    const score = answers.reduce((acc, curr, idx) => (curr === activeQuestions[idx].answer ? acc + 1 : acc), 0);
+    const signature = `${activeQuestions.length}:${score}:${elapsedSeconds}:${selectedAssignmentIndex ?? 'all'}:${sessionMode ?? 'unknown'}`;
+    if (completedSessionSignatureRef.current === signature) return;
+    completedSessionSignatureRef.current = signature;
+    emitEvent('quiz_completed', {
+      question_count: activeQuestions.length,
+      score,
+      incorrect_count: activeQuestions.length - score,
+      unanswered_count: answers.filter(answer => answer === null).length,
+      timed_mode_enabled: isTimedMode,
+      time_taken_seconds: elapsedSeconds,
+      session_mode: sessionMode ?? 'sequence',
+      quiz_scope: quizScope ?? 'all',
+      assignment_number:
+        selectedAssignmentIndex !== null ? assignmentAnalyticsNumber(selectedAssignmentIndex) : null,
+    });
+  }, [
+    isFinished,
+    activeQuestions,
+    answers,
+    elapsedSeconds,
+    selectedAssignmentIndex,
+    sessionMode,
+    quizScope,
+    isTimedMode,
+    assignmentAnalyticsNumber,
+  ]);
+
   const goToScopeScreen = () => {
+    emitEvent('quiz_scope_reset', {
+      from_scope: quizScope ?? 'unknown',
+      from_session_mode: sessionMode ?? 'none',
+    });
     setQuizScope(null);
     setSelectedAssignmentIndex(null);
     setSessionMode(null);
@@ -308,18 +397,31 @@ export default function SubjectQuizContainer({
   };
 
   const chooseAllQuestions = () => {
+    emitEvent('quiz_scope_selected', {
+      quiz_scope: 'all',
+      timed_mode_enabled: isTimedMode,
+    });
     setQuizScope('all');
     setSelectedAssignmentIndex(null);
     setSessionMode(null);
   };
 
   const chooseAssignmentWise = () => {
+    emitEvent('quiz_scope_selected', {
+      quiz_scope: 'assignment',
+      timed_mode_enabled: isTimedMode,
+    });
     setQuizScope('assignment');
     setSelectedAssignmentIndex(null);
     setSessionMode(null);
   };
 
   const exitToPreviousQuizStep = () => {
+    emitEvent('quiz_exit_to_attempt_options', {
+      quiz_scope: quizScope ?? 'unknown',
+      current_question_number: currentIndex + 1,
+      total_questions: activeQuestions.length,
+    });
     setSessionMode(null);
     setSessionQuestions([]);
     setActiveQuestions([]);
@@ -333,6 +435,12 @@ export default function SubjectQuizContainer({
 
   const startAllQuestionsSession = (mode: SessionMode) => {
     const preparedQuestions = buildAllQuestionsSession(mode);
+    emitEvent('quiz_session_started', {
+      quiz_scope: 'all',
+      session_mode: mode,
+      question_count: preparedQuestions.length,
+      timed_mode_enabled: isTimedMode,
+    });
     setSessionMode(mode);
     setSessionQuestions(preparedQuestions);
     setActiveQuestions(preparedQuestions);
@@ -345,6 +453,13 @@ export default function SubjectQuizContainer({
   const startAssignmentQuiz = (assignmentIndex: number) => {
     const preparedQuestions = getAssignmentQuestions(assignmentIndex);
     if (preparedQuestions.length === 0) return;
+    emitEvent('quiz_session_started', {
+      quiz_scope: 'assignment',
+      session_mode: 'sequence',
+      assignment_number: assignmentAnalyticsNumber(assignmentIndex),
+      question_count: preparedQuestions.length,
+      timed_mode_enabled: isTimedMode,
+    });
     setSelectedAssignmentIndex(assignmentIndex);
     setSessionMode('sequence');
     setSessionQuestions(preparedQuestions);
@@ -368,7 +483,10 @@ export default function SubjectQuizContainer({
           {onBackToSubjects && (
             <button
               type="button"
-              onClick={onBackToSubjects}
+              onClick={() => {
+                emitEvent('quiz_back_to_subjects_clicked', {});
+                onBackToSubjects();
+              }}
               className="mb-4 text-sm font-semibold text-indigo-600 hover:text-indigo-800"
             >
               ← Back to subjects
@@ -382,7 +500,13 @@ export default function SubjectQuizContainer({
               <div className="text-sm font-bold text-indigo-900">Timed mode</div>
               <button
                 type="button"
-                onClick={() => setIsTimedMode(prev => !prev)}
+                onClick={() => {
+                  setIsTimedMode(prev => {
+                    const next = !prev;
+                    emitEvent('quiz_timed_mode_toggled', { enabled: next });
+                    return next;
+                  });
+                }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
                   isTimedMode
                     ? 'bg-indigo-600 text-white border-indigo-600'
@@ -521,6 +645,19 @@ export default function SubjectQuizContainer({
 
   const handleSelectAnswer = (option: string) => {
     if (isAnswered) return;
+    const isCorrect = option === currentQuestion.answer;
+
+    emitEvent('quiz_answer_selected', {
+      question_number: currentIndex + 1,
+      total_questions: activeQuestions.length,
+      is_correct: isCorrect,
+      timed_mode_enabled: isTimedMode,
+      elapsed_seconds: elapsedSeconds,
+      session_mode: sessionMode ?? 'sequence',
+      quiz_scope: quizScope ?? 'all',
+      assignment_number:
+        selectedAssignmentIndex !== null ? assignmentAnalyticsNumber(selectedAssignmentIndex) : null,
+    });
 
     setAnswers(prev => {
       const newAnswers = [...prev];
@@ -528,7 +665,7 @@ export default function SubjectQuizContainer({
       return newAnswers;
     });
 
-    if (option === currentQuestion.answer) {
+    if (isCorrect) {
       window.setTimeout(() => {
         if (currentIndex === activeQuestions.length - 1) {
           setIsFinished(true);
@@ -540,6 +677,13 @@ export default function SubjectQuizContainer({
   };
 
   const handleNext = () => {
+    emitEvent('quiz_navigation_clicked', {
+      direction: 'next',
+      question_number: currentIndex + 1,
+      total_questions: activeQuestions.length,
+      timed_mode_enabled: isTimedMode,
+      elapsed_seconds: elapsedSeconds,
+    });
     if (currentIndex === activeQuestions.length - 1) {
       setIsFinished(true);
     } else {
@@ -549,11 +693,22 @@ export default function SubjectQuizContainer({
 
   const handleBack = () => {
     if (currentIndex > 0) {
+      emitEvent('quiz_navigation_clicked', {
+        direction: 'back',
+        question_number: currentIndex + 1,
+        total_questions: activeQuestions.length,
+        timed_mode_enabled: isTimedMode,
+        elapsed_seconds: elapsedSeconds,
+      });
       setCurrentIndex(prev => prev - 1);
     }
   };
 
   const handleRestart = () => {
+    emitEvent('quiz_restarted', {
+      question_count: sessionQuestions.length,
+      timed_mode_enabled: isTimedMode,
+    });
     setActiveQuestions(sessionQuestions);
     setCurrentIndex(0);
     setAnswers(new Array(sessionQuestions.length).fill(null));
@@ -566,6 +721,10 @@ export default function SubjectQuizContainer({
       handleRestart();
       return;
     }
+    emitEvent('quiz_retry_wrong_only', {
+      retry_question_count: wrongQuestions.length,
+      timed_mode_enabled: isTimedMode,
+    });
     setActiveQuestions(wrongQuestions);
     setCurrentIndex(0);
     setAnswers(new Array(wrongQuestions.length).fill(null));
@@ -658,7 +817,12 @@ export default function SubjectQuizContainer({
             </button>
             <button
               type="button"
-              onClick={goToScopeScreen}
+              onClick={() => {
+                emitEvent('quiz_change_practice_option_clicked', {
+                  timed_mode_enabled: isTimedMode,
+                });
+                goToScopeScreen();
+              }}
               className="w-full py-3 text-sm font-semibold text-indigo-600 hover:text-indigo-800"
             >
               Change practice option

@@ -25,6 +25,8 @@ export default function HciQuizContainer({ onBackToSubjects }: HciQuizContainerP
       questions={HCI_QUESTIONS}
       sessionStorageKey="hci-quiz-session-v1"
       assignmentIdRangesInOrder={ASSIGNMENT_ID_RANGES_IN_ORDER}
+      analyticsSubject="human_computer_interactions"
+      assignmentAnalyticsNumber={(index) => index + 1}
       onBackToSubjects={onBackToSubjects}
       scopeDescription="Pick one week at a time (in order), or attempt every question together. You can repeat as many times as you like."
       allQuestionsDescription={(count) => `Choose how to attempt all ${count} questions. Your choice stays for this session, including retries.`}

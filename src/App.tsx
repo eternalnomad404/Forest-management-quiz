@@ -3,13 +3,25 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { track } from '@vercel/analytics';
 import HciQuizContainer from './components/HciQuizContainer';
 import QuizContainer from './components/QuizContainer';
 import SubjectSelection, { SubjectKey } from './components/SubjectSelection';
 
 export default function App() {
   const [selectedSubject, setSelectedSubject] = useState<SubjectKey | null>(null);
+
+  useEffect(() => {
+    track('quiz_subject_selection_viewed', {});
+  }, []);
+
+  const handleSelectSubject = (subject: SubjectKey) => {
+    track('quiz_subject_selected', {
+      subject: subject === 'forest-management' ? 'forest_management' : 'human_computer_interactions',
+    });
+    setSelectedSubject(subject);
+  };
 
   const renderContent = () => {
     if (selectedSubject === 'forest-management') {
@@ -20,7 +32,7 @@ export default function App() {
       return <HciQuizContainer onBackToSubjects={() => setSelectedSubject(null)} />;
     }
 
-    return <SubjectSelection onSelectSubject={setSelectedSubject} />;
+    return <SubjectSelection onSelectSubject={handleSelectSubject} />;
   };
 
   return (
