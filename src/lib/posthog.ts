@@ -142,3 +142,33 @@ export function captureFlowStepViewed(
   }
 }
 
+export function captureWebsiteVisited() {
+  if (!isPostHogReady()) return;
+
+  const payload = {
+    version: QUIZ_VERSION,
+    path: typeof window !== 'undefined' ? window.location.pathname : '',
+  };
+
+  posthog.capture('website_visited', payload);
+
+  if (viteEnv?.DEV === true) {
+    console.info('[posthog] website_visited', payload);
+  }
+}
+
+export function captureSubjectClicked(properties: { subject: string }) {
+  if (!isPostHogReady()) return;
+
+  const payload = {
+    ...properties,
+    version: QUIZ_VERSION,
+  };
+
+  posthog.capture('subject_clicked', payload);
+
+  if (viteEnv?.DEV === true) {
+    console.info('[posthog] subject_clicked', payload);
+  }
+}
+

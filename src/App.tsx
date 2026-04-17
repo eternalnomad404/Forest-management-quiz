@@ -9,18 +9,24 @@ import HciQuizContainer from './components/HciQuizContainer';
 import JoyOfComputingQuizContainer from './components/JoyOfComputingQuizContainer';
 import QuizContainer from './components/QuizContainer';
 import SubjectSelection, { SubjectKey } from './components/SubjectSelection';
-import { captureFlowStepViewed } from './lib/posthog';
+import { captureFlowStepViewed, captureSubjectClicked, captureWebsiteVisited } from './lib/posthog';
 
 export default function App() {
   const [selectedSubject, setSelectedSubject] = useState<SubjectKey | null>(null);
 
   useEffect(() => {
     track('quiz_subject_selection_viewed', {});
+  }, []);
+
+  useEffect(() => {
+    if (selectedSubject !== null) return;
+
+    captureWebsiteVisited();
     captureFlowStepViewed({
       subject: 'all_subjects',
       step: 'subject_selection',
     });
-  }, []);
+  }, [selectedSubject]);
 
   const handleSelectSubject = (subject: SubjectKey) => {
     const subjectToAnalyticsValue: Record<SubjectKey, string> = {
@@ -32,6 +38,11 @@ export default function App() {
     track('quiz_subject_selected', {
       subject: subjectToAnalyticsValue[subject],
     });
+
+    captureSubjectClicked({
+      subject: subjectToAnalyticsValue[subject],
+    });
+
     setSelectedSubject(subject);
   };
 
