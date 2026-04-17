@@ -5,6 +5,7 @@ import { track } from '@vercel/analytics';
 import QuestionCard from './QuestionCard';
 import ProgressIndicator from './ProgressIndicator';
 import { Question } from '../types';
+import { captureFlowStepViewed, captureQuizEvent } from '../lib/posthog';
 
 type SessionMode = 'sequence' | 'sequence_shuffled_options' | 'jumbled';
 type QuizScope = 'all' | 'assignment';
@@ -107,6 +108,10 @@ export default function SubjectQuizContainer({
   const hasTrackedPracticeViewRef = useRef(false);
   const hasTrackedAllModeViewRef = useRef(false);
   const hasTrackedAssignmentViewRef = useRef(false);
+  const hasTrackedPracticeOptionsFlowRef = useRef(false);
+  const hasTrackedAttemptModeFlowRef = useRef(false);
+  const hasTrackedQuizInProgressFlowRef = useRef(false);
+  const hasTrackedQuizCompletedFlowRef = useRef(false);
   const completedSessionSignatureRef = useRef<string | null>(null);
 
   const emitEvent = (eventName: string, payload: Record<string, string | number | boolean | null>) => {
@@ -326,6 +331,62 @@ export default function SubjectQuizContainer({
 
   useEffect(() => {
     if (!isHydrated) return;
+    if (quizScope === null && !hasTrackedPracticeOptionsFlowRef.current) {
+      captureFlowStepViewed({
+        subject: analyticsSubject,
+        step: 'practice_options',
+      });
+      hasTrackedPracticeOptionsFlowRef.current = true;
+    }
+    if (quizScope !== null) {
+      hasTrackedPracticeOptionsFlowRef.current = false;
+    }
+  }, [isHydrated, quizScope, analyticsSubject]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (quizScope !== null && sessionMode === null && !hasTrackedAttemptModeFlowRef.current) {
+      captureFlowStepViewed({
+        subject: analyticsSubject,
+        step: 'attempt_mode',
+      });
+      hasTrackedAttemptModeFlowRef.current = true;
+    }
+    if (!(quizScope !== null && sessionMode === null)) {
+      hasTrackedAttemptModeFlowRef.current = false;
+    }
+  }, [isHydrated, quizScope, sessionMode, analyticsSubject]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (sessionMode !== null && !isFinished && !hasTrackedQuizInProgressFlowRef.current) {
+      captureFlowStepViewed({
+        subject: analyticsSubject,
+        step: 'quiz_in_progress',
+      });
+      hasTrackedQuizInProgressFlowRef.current = true;
+    }
+    if (!(sessionMode !== null && !isFinished)) {
+      hasTrackedQuizInProgressFlowRef.current = false;
+    }
+  }, [isHydrated, sessionMode, isFinished, analyticsSubject]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (isFinished && !hasTrackedQuizCompletedFlowRef.current) {
+      captureFlowStepViewed({
+        subject: analyticsSubject,
+        step: 'quiz_completed_screen',
+      });
+      hasTrackedQuizCompletedFlowRef.current = true;
+    }
+    if (!isFinished) {
+      hasTrackedQuizCompletedFlowRef.current = false;
+    }
+  }, [isHydrated, isFinished, analyticsSubject]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
     if (quizScope === 'all' && sessionMode === null && !hasTrackedAllModeViewRef.current) {
       emitEvent('quiz_all_questions_mode_viewed', {
         question_count: questions.length,
@@ -368,6 +429,12 @@ export default function SubjectQuizContainer({
       assignment_number:
         selectedAssignmentIndex !== null ? assignmentAnalyticsNumber(selectedAssignmentIndex) : null,
     });
+
+    captureQuizEvent('quiz_completed', {
+      subject: analyticsSubject,
+      score,
+      total: activeQuestions.length,
+    });
   }, [
     isFinished,
     activeQuestions,
@@ -378,6 +445,7 @@ export default function SubjectQuizContainer({
     quizScope,
     isTimedMode,
     assignmentAnalyticsNumber,
+    analyticsSubject,
   ]);
 
   const goToScopeScreen = () => {
@@ -448,6 +516,10 @@ export default function SubjectQuizContainer({
     setAnswers(new Array(preparedQuestions.length).fill(null));
     setIsFinished(false);
     setElapsedSeconds(0);
+
+    captureQuizEvent('quiz_started', {
+      subject: analyticsSubject,
+    });
   };
 
   const startAssignmentQuiz = (assignmentIndex: number) => {
@@ -468,6 +540,10 @@ export default function SubjectQuizContainer({
     setAnswers(new Array(preparedQuestions.length).fill(null));
     setIsFinished(false);
     setElapsedSeconds(0);
+
+    captureQuizEvent('quiz_started', {
+      subject: analyticsSubject,
+    });
   };
 
   if (!isHydrated) return null;
@@ -657,6 +733,12 @@ export default function SubjectQuizContainer({
       quiz_scope: quizScope ?? 'all',
       assignment_number:
         selectedAssignmentIndex !== null ? assignmentAnalyticsNumber(selectedAssignmentIndex) : null,
+    });
+
+    captureQuizEvent('answer_submitted', {
+      question_id: currentQuestion.id,
+      subject: analyticsSubject,
+      is_correct: isCorrect,
     });
 
     setAnswers(prev => {

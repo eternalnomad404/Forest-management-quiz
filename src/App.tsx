@@ -9,12 +9,17 @@ import HciQuizContainer from './components/HciQuizContainer';
 import JoyOfComputingQuizContainer from './components/JoyOfComputingQuizContainer';
 import QuizContainer from './components/QuizContainer';
 import SubjectSelection, { SubjectKey } from './components/SubjectSelection';
+import { captureFlowStepViewed } from './lib/posthog';
 
 export default function App() {
   const [selectedSubject, setSelectedSubject] = useState<SubjectKey | null>(null);
 
   useEffect(() => {
     track('quiz_subject_selection_viewed', {});
+    captureFlowStepViewed({
+      subject: 'all_subjects',
+      step: 'subject_selection',
+    });
   }, []);
 
   const handleSelectSubject = (subject: SubjectKey) => {
