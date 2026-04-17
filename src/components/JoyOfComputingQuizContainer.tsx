@@ -13,6 +13,7 @@ const ASSIGNMENT_ID_RANGES_IN_ORDER = [
   [121, 135], // Assignment 9
   [136, 150], // Assignment 10
   [151, 165], // Assignment 11
+  [166, 180], // Assignment 12
 ] as const;
 
 interface JoyOfComputingQuizContainerProps {
@@ -25,7 +26,7 @@ export default function JoyOfComputingQuizContainer({
   return (
     <SubjectQuizContainer
       questions={JOY_OF_COMPUTING_QUESTIONS}
-      sessionStorageKey="joy-of-computing-quiz-session-v9"
+      sessionStorageKey="joy-of-computing-quiz-session-v10"
       assignmentIdRangesInOrder={ASSIGNMENT_ID_RANGES_IN_ORDER}
       analyticsSubject="joy_of_computing"
       assignmentAnalyticsNumber={(index) => index + 1}
