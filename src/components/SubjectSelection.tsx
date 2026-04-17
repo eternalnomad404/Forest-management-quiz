@@ -1,6 +1,9 @@
 import { motion } from 'motion/react';
 
-export type SubjectKey = 'forest-management' | 'human-computer-interactions';
+export type SubjectKey =
+  | 'forest-management'
+  | 'human-computer-interactions'
+  | 'joy-of-computing';
 
 interface SubjectSelectionProps {
   onSelectSubject: (subject: SubjectKey) => void;
@@ -17,6 +20,10 @@ const SUBJECTS: Array<{
   {
     key: 'human-computer-interactions',
     title: 'Human Computer Interactions',
+  },
+  {
+    key: 'joy-of-computing',
+    title: 'Joy of Computing',
   },
 ];
 

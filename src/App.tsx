@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react';
 import { track } from '@vercel/analytics';
 import HciQuizContainer from './components/HciQuizContainer';
+import JoyOfComputingQuizContainer from './components/JoyOfComputingQuizContainer';
 import QuizContainer from './components/QuizContainer';
 import SubjectSelection, { SubjectKey } from './components/SubjectSelection';
 
@@ -17,8 +18,14 @@ export default function App() {
   }, []);
 
   const handleSelectSubject = (subject: SubjectKey) => {
+    const subjectToAnalyticsValue: Record<SubjectKey, string> = {
+      'forest-management': 'forest_management',
+      'human-computer-interactions': 'human_computer_interactions',
+      'joy-of-computing': 'joy_of_computing',
+    };
+
     track('quiz_subject_selected', {
-      subject: subject === 'forest-management' ? 'forest_management' : 'human_computer_interactions',
+      subject: subjectToAnalyticsValue[subject],
     });
     setSelectedSubject(subject);
   };
@@ -30,6 +37,10 @@ export default function App() {
 
     if (selectedSubject === 'human-computer-interactions') {
       return <HciQuizContainer onBackToSubjects={() => setSelectedSubject(null)} />;
+    }
+
+    if (selectedSubject === 'joy-of-computing') {
+      return <JoyOfComputingQuizContainer onBackToSubjects={() => setSelectedSubject(null)} />;
     }
 
     return <SubjectSelection onSelectSubject={handleSelectSubject} />;

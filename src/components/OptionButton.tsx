@@ -1,5 +1,4 @@
 import { motion } from 'motion/react';
-import { cn } from '../lib/utils';
 
 interface OptionButtonProps {
   key?: string;
@@ -10,6 +9,15 @@ interface OptionButtonProps {
   onClick: () => void;
 }
 
+function renderBoldMarkup(text: string) {
+  return text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    return <span key={index}>{part}</span>;
+  });
+}
+
 export default function OptionButton({
   option,
   isSelected,
@@ -17,6 +25,8 @@ export default function OptionButton({
   isAnswered,
   onClick,
 }: OptionButtonProps) {
+  const isImageOption = option.startsWith('__img__:');
+  const optionImageUrl = isImageOption ? option.replace('__img__:', '') : '';
   let buttonStyles = "w-full p-4 text-left rounded-xl border-2 transition-all duration-200 flex items-center justify-between group";
   
   if (!isAnswered) {
@@ -38,7 +48,16 @@ export default function OptionButton({
       disabled={isAnswered}
       className={buttonStyles}
     >
-      <span className="font-medium text-lg">{option}</span>
+      {isImageOption ? (
+        <img
+          src={optionImageUrl}
+          alt="Option visual"
+          className="max-h-40 w-auto rounded-md border border-gray-200 bg-white"
+          loading="lazy"
+        />
+      ) : (
+        <span className="font-medium text-lg whitespace-pre-line">{renderBoldMarkup(option)}</span>
+      )}
       {isAnswered && isCorrect && (
         <motion.div
           initial={{ scale: 0 }}

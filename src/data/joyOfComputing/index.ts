@@ -1,0 +1,14 @@
+import { Question } from '../../types';
+import { JOY_OF_COMPUTING_WEEK_1_QUESTIONS } from './week1';
+import { JOY_OF_COMPUTING_WEEK_2_QUESTIONS } from './week2';
+import { JOY_OF_COMPUTING_WEEK_3_QUESTIONS } from './week3';
+import { JOY_OF_COMPUTING_WEEK_4_QUESTIONS } from './week4';
+import { JOY_OF_COMPUTING_WEEK_5_QUESTIONS } from './week5';
+
+export const JOY_OF_COMPUTING_QUESTIONS: Question[] = [
+  ...JOY_OF_COMPUTING_WEEK_1_QUESTIONS,
+  ...JOY_OF_COMPUTING_WEEK_2_QUESTIONS,
+  ...JOY_OF_COMPUTING_WEEK_3_QUESTIONS,
+  ...JOY_OF_COMPUTING_WEEK_4_QUESTIONS,
+  ...JOY_OF_COMPUTING_WEEK_5_QUESTIONS,
+];

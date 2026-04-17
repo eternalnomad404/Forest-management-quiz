@@ -835,61 +835,66 @@ export default function SubjectQuizContainer({
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 md:py-10">
-      <div className="mb-3 relative flex items-center justify-center min-h-8">
-        <button
-          type="button"
-          onClick={exitToPreviousQuizStep}
-          className="text-sm font-semibold text-indigo-100 hover:text-white underline underline-offset-2 whitespace-nowrap"
-        >
-          ← Back to attempt options
-        </button>
-        <div className="absolute right-0 top-1/2 -translate-y-1/2">
-          {isTimedMode && (
-            <div className="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs md:text-sm font-bold text-indigo-700">
-              ⏱ {formatDuration(elapsedSeconds)}
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="mb-6">
-        <div className="flex items-center justify-between bg-white/10 backdrop-blur-md rounded-2xl p-2 border border-white/20">
+    <div className="px-4 py-6 md:py-10">
+      <div className="sticky top-0 z-20 bg-indigo-600 border-0 ring-0 outline-none shadow-none">
+        <div className="max-w-2xl mx-auto">
+          <div className="mb-3 relative flex items-center justify-center min-h-8">
           <button
             type="button"
-            onClick={handleBack}
-            disabled={currentIndex === 0}
-            className="p-3 rounded-xl text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
-            aria-label="Previous Question"
+            onClick={exitToPreviousQuizStep}
+            className="text-sm font-semibold text-indigo-100 hover:text-white underline underline-offset-2 whitespace-nowrap"
           >
-            <ChevronLeft className="w-6 h-6" />
+            ← Back to attempt options
           </button>
-
-          <div className="flex-1 px-4">
-            <ProgressIndicator current={currentIndex + 1} total={activeQuestions.length} />
+          <div className="absolute right-0 top-1/2 -translate-y-1/2">
+            {isTimedMode && (
+              <div className="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs md:text-sm font-bold text-indigo-700">
+                ⏱ {formatDuration(elapsedSeconds)}
+              </div>
+            )}
           </div>
+          </div>
+          <div className="mb-3">
+            <div className="flex items-center justify-between bg-indigo-500 rounded-2xl p-2">
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={currentIndex === 0}
+                className="p-3 rounded-xl text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
+                aria-label="Previous Question"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
 
-          <button
-            type="button"
-            onClick={handleNext}
-            className="p-3 rounded-xl text-white hover:bg-white/10 transition-all active:scale-90"
-            aria-label="Next Question"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
+              <div className="flex-1 px-4">
+                <ProgressIndicator current={currentIndex + 1} total={activeQuestions.length} />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleNext}
+                className="p-3 rounded-xl text-white hover:bg-white/10 transition-all active:scale-90"
+                aria-label="Next Question"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
-      <AnimatePresence mode="wait">
-        <QuestionCard
-          key={currentIndex}
-          question={currentQuestion}
-          selectedAnswer={selectedAnswer}
-          isAnswered={isAnswered}
-          onSelect={handleSelectAnswer}
-        />
-      </AnimatePresence>
-      <div className="mt-6 text-center text-xs md:text-sm font-semibold uppercase tracking-wide text-indigo-100">
-        {sessionTypeLabel}
+      <div className="max-w-2xl mx-auto pt-1 rounded-t-3xl overflow-hidden">
+        <AnimatePresence mode="wait">
+          <QuestionCard
+            key={currentIndex}
+            question={currentQuestion}
+            selectedAnswer={selectedAnswer}
+            isAnswered={isAnswered}
+            onSelect={handleSelectAnswer}
+          />
+        </AnimatePresence>
+        <div className="mt-6 text-center text-xs md:text-sm font-semibold uppercase tracking-wide text-indigo-100">
+          {sessionTypeLabel}
+        </div>
       </div>
     </div>
   );
