@@ -10,10 +10,52 @@ const POSTHOG_API_KEY = envString(viteEnv?.VITE_POSTHOG_API_KEY) ?? 'phc_ureuAkj
 const POSTHOG_API_HOST = envString(viteEnv?.VITE_POSTHOG_API_HOST) ?? 'https://us.i.posthog.com';
 const QUIZ_VERSION = envString(viteEnv?.VITE_QUIZ_VERSION) ?? 'v1';
 
-let isPostHogInitialized = false;
+const DEFAULT_ALLOWED_HOSTS = ['forest-management-quiz-sable.vercel.app'];
+
+function parseHostAllowlist(raw: string | undefined) {
+  if (!raw) return DEFAULT_ALLOWED_HOSTS;
+  return raw
+    .split(',')
+    .map(host => host.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+const POSTHOG_ALLOWED_HOSTS = parseHostAllowlist(envString(viteEnv?.VITE_POSTHOG_ALLOWED_HOSTS));
+const POSTHOG_ENABLE_LOCAL = viteEnv?.VITE_POSTHOG_ENABLE_LOCAL === true || viteEnv?.VITE_POSTHOG_ENABLE_LOCAL === 'true';
+
+type PosthogInitState = 'not_attempted' | 'skipped' | 'initialized';
+let posthogInitState: PosthogInitState = 'not_attempted';
+
+function getHostname() {
+  if (typeof window === 'undefined') return '';
+  return window.location.hostname.toLowerCase();
+}
+
+function isPostHogAllowedForCurrentHost() {
+  if (POSTHOG_ENABLE_LOCAL) return true;
+  const hostname = getHostname();
+  if (!hostname) return false;
+  return POSTHOG_ALLOWED_HOSTS.includes(hostname);
+}
+
+function isPostHogReady() {
+  return posthogInitState === 'initialized' && typeof posthog.capture === 'function';
+}
 
 export function initPostHog() {
-  if (isPostHogInitialized || !POSTHOG_API_KEY) return;
+  if (posthogInitState !== 'not_attempted' || !POSTHOG_API_KEY) return;
+
+  if (!isPostHogAllowedForCurrentHost()) {
+    if (viteEnv?.DEV === true) {
+      console.info('[posthog] disabled on this host', {
+        hostname: getHostname(),
+        allowed_hosts: POSTHOG_ALLOWED_HOSTS,
+        enable_local_override: POSTHOG_ENABLE_LOCAL,
+      });
+    }
+    posthogInitState = 'skipped';
+    return;
+  }
 
   posthog.init(POSTHOG_API_KEY, {
     api_host: POSTHOG_API_HOST,
@@ -34,7 +76,7 @@ export function initPostHog() {
     });
   }
 
-  isPostHogInitialized = true;
+  posthogInitState = 'initialized';
 }
 
 type QuizStartedEvent = {
@@ -66,6 +108,8 @@ export function captureQuizEvent<TEvent extends keyof QuizEventMap>(
   eventName: TEvent,
   properties: Omit<QuizEventMap[TEvent], 'version'>,
 ) {
+  if (!isPostHogReady()) return;
+
   const payload = {
     ...properties,
     version: QUIZ_VERSION,
@@ -84,6 +128,8 @@ export function captureFlowStepViewed(
     step: 'subject_selection' | 'practice_options' | 'attempt_mode' | 'quiz_in_progress' | 'quiz_completed_screen';
   },
 ) {
+  if (!isPostHogReady()) return;
+
   const payload = {
     ...properties,
     version: QUIZ_VERSION,
